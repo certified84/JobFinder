@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name">Job Finder</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tag_fragment_start">Start</string>
+    <string name="tag_fragment_register">Register Fragment</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_email">Email</string>
+    <string name="login">LOGIN</string>
+    <string name="hint_name">Name</string>
+    <string name="register">REGISTER</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="hint_confirm_password">Confirm password</string>
+    <string name="or">OR</string>
+    <string name="log_in_here">Log in here</string>
+    <string name="hint_phone">Phone</string>
+    <string name="tag_fragment_login">Login fragment</string>
+    <string name="title_activity_individual">IndividualActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="tag_choose_fragment">Choose Fragment</string>
+    <string name="experience">Experience a personalized job seeking experience journey towards your dream job</string>
+    <string name="sign_up_now">Sign up now</string>
+    <string name="forgot_password">forgot password?</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="business">Business</string>
+    <string name="individual">Individual</string>
+    <string name="title_activity_business">BusinessActivity</string>
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="tag_fragment_home">Home Fragment</string>
+    <string name="tag_fragment_profile">Profile Fragment</string>
+    <string name="tag_fragment_jobs">Jobs Fragment</string>
+    <string name="tag_fragment_alert">Alert Fragment</string>
+    <string name="title_activity_b_o">BOActivity</string>
+</resources>
