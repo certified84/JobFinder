@@ -14,13 +14,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.certified.jobfinder.model.User;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class StartFragment extends Fragment implements View.OnClickListener {
 
@@ -71,12 +77,12 @@ public class StartFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_register:
-                Log.d(TAG, "onClick: button register clicked");
+                Log.d(TAG, "onClick: text view register clicked");
                 mNavController.navigate(R.id.action_startFragment_to_registerFragment);
                 break;
 
             case R.id.tv_login:
-                Log.d(TAG, "onClick: button login clicked");
+                Log.d(TAG, "onClick: text view login clicked");
                 mNavController.navigate(R.id.action_startFragment_to_loginFragment);
                 break;
 
@@ -105,10 +111,11 @@ public class StartFragment extends Fragment implements View.OnClickListener {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             Log.d(TAG, "checkAuthenticationState: User is null.");
-//            isIndividual();
         } else {
-            Log.d(TAG, "checkAuthenticationState: User is authenticated");
+            Log.d(TAG, "checkAuthenticationState: User is authenticated with: " +
+                    FirebaseAuth.getInstance().getCurrentUser().getEmail());
             startActivity(new Intent(getContext(), IndividualActivity.class));
+//            checkAccountSelection();
         }
     }
 
@@ -121,10 +128,11 @@ public class StartFragment extends Fragment implements View.OnClickListener {
 //        }
     }
 
+
     @Override
     public void onStop() {
         super.onStop();
-        if(mAuthStateListener != null) {
+        if (mAuthStateListener != null) {
             FirebaseAuth.getInstance().removeAuthStateListener(mAuthStateListener);
         }
     }
@@ -138,7 +146,7 @@ public class StartFragment extends Fragment implements View.OnClickListener {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
-                if(user != null) {
+                if (user != null) {
                     Log.d(TAG, "onAuthStateChanged: signed in " + user.getUid());
                     checkIfUserIsVerified(user);
                 } else {
@@ -149,18 +157,49 @@ public class StartFragment extends Fragment implements View.OnClickListener {
     }
 
     private void checkIfUserIsVerified(FirebaseUser user) {
-        if(user.isEmailVerified()) {
-//            Log.d(TAG, "onAuthStateChanged: signed in " + user.getUid());
-//            Toast.makeText(this, "Authenticated with: " + user.getEmail(),
-//                    Toast.LENGTH_LONG).show();
-//            checkIfIsIndividual();
-            Intent intent = new Intent(getContext(), IndividualActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+
+        if (user.isEmailVerified()) {
+            queryDatabase();
         } else {
             Toast.makeText(getContext(), "Check your Email inbox for a verification " +
                     "link", Toast.LENGTH_LONG).show();
             FirebaseAuth.getInstance().signOut();
         }
+    }
+
+    private void queryDatabase() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+
+        Query query = reference.child(getString(R.string.dbnode_users))
+                .orderByKey()
+                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                //this loop will return a single result
+                for (DataSnapshot singleSnapshot : snapshot.getChildren()) {
+                    Log.d(TAG, "onDataChange: (QUERY METHOD 1) found user: "
+                            + singleSnapshot.getValue(User.class).toString());
+                    User user = singleSnapshot.getValue(User.class);
+                    String level = user.getLevel();
+
+                    if (level.equals(getString(R.string.individual))) {
+                        Log.d(TAG, "checkAuthenticationState: User is authenticated with an individual account");
+                        Intent intent = new Intent(getContext(), IndividualActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    } else if (level.equals(getString(R.string.business))) {
+                        Log.d(TAG, "checkAuthenticationState: User is authenticated with a business account");
+                        Intent intent = new Intent(getContext(), BusinessActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }

@@ -1,20 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:showIn="navigation_view">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
+            android:id="@+id/homeFragment"
+            android:icon="@drawable/ic_home"
             android:title="@string/menu_home" />
+    </group>
+    <group
+        android:checkableBehavior="single"
+        android:menuCategory="secondary">
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_gallery" />
+            android:id="@+id/settingsFragment"
+            android:icon="@drawable/ic_settings"
+            android:title="Settings" />
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
+            android:id="@+id/aboutFragment"
+            android:icon="@drawable/ic_about"
+            android:title="About us" />
+        <item
+            android:id="@+id/contactFragment"
+            android:icon="@drawable/ic_contact"
+            android:title="Contact us" />
+        <item
+            android:id="@+id/helpFragment"
+            android:icon="@drawable/ic_help"
+            android:title="Help / feedback" />
+        <item
+            android:id="@+id/nav_sign_out"
+            android:icon="@drawable/ic_logout"
+            android:title="Sign out" />
     </group>
 </menu>

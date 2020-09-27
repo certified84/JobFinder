@@ -1,17 +1,20 @@
 apply plugin: 'com.android.application'
+//apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "com.certified.jobfinder"
         minSdkVersion 17
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -19,6 +22,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -33,6 +40,9 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.3.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.multidex:multidex:2.0.1'
+//    implementation 'com.android.support:support-v4:28.0.0'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
@@ -40,9 +50,14 @@ dependencies {
 //    firebase
     implementation 'com.google.firebase:firebase-analytics:17.2.2'
     implementation 'com.google.firebase:firebase-auth:19.3.2'
+    implementation 'com.google.firebase:firebase-crashlytics:17.1.1'
+    implementation 'com.google.firebase:firebase-storage:19.1.1'
+    implementation 'com.google.firebase:firebase-firestore:21.5.0'
+    implementation 'com.google.firebase:firebase-messaging:20.2.4'
+    implementation 'com.google.firebase:firebase-database:19.3.1'
 
 //    Like button
-//    implementation 'com.github.jd-alexander:LikeButton:0.2.3'
+    implementation 'com.github.jd-alexander:LikeButton:0.2.3'
 
 //    circle image
     implementation 'de.hdodenhof:circleimageview:3.1.0'
@@ -50,8 +65,24 @@ dependencies {
 //    glide
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+
+//    Room persistence library
+    implementation "androidx.room:room-runtime:2.2.5"
+    annotationProcessor "androidx.room:room-compiler:2.2.5"
+
+//    implementation "androidx.core:core-ktx:+"
+//    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
+//    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
 }
 
 //firebase
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
+
+apply plugin: "androidx.navigation.safeargs"
+
+repositories {
+    mavenCentral()
+}

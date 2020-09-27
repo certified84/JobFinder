@@ -53,4 +53,19 @@
     <string name="tag_fragment_jobs">Jobs Fragment</string>
     <string name="tag_fragment_alert">Alert Fragment</string>
     <string name="title_activity_b_o">BOActivity</string>
+    <string name="dbnode_users">users</string>
+    <string name="login_with_google">Login With Google</string>
+    <string name="login_with_facebook">Login With Facebook</string>
+    <string name="login_with_twitter">Login With Twitter</string>
+    <string name="create_account">Create account</string>
+    <string name="dbnode_jobs">jobs</string>
+    <string name="db_subnode_level">level</string>
+    <string name="email">Email</string>
+    <string name="name">Name</string>
+    <string name="phone">Phone</string>
+    <string name="location">Location</string>
+    <string name="save">save</string>
+    <string name="cancel">cancel</string>
+    <string name="enter_bsiness_name">Enter bsiness name</string>
+    <string name="enter_phone_no">Enter phone no</string>
 </resources>

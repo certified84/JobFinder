@@ -9,7 +9,13 @@
 
     <style name="NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorPrimaryDark">@color/primaryDarkGreen</item>
+        <item name="colorPrimaryDark">@color/lightBlack</item>
+        <item name="colorPrimary">@color/accentGreen</item>
+    </style>
+
+    <style name="StartActivityNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimaryDark">@color/white</item>
         <item name="colorPrimary">@color/accentGreen</item>
     </style>
 

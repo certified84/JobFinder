@@ -2,32 +2,40 @@ package com.certified.jobfinder;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import com.certified.jobfinder.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class RegisterFragment extends Fragment implements View.OnClickListener {
 
@@ -40,6 +48,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     private Button mRegister;
     private ProgressBar mProgressBar;
     private ImageView mBack, facebook, google, twitter;
+    private Spinner mSpinner;
 
     public RegisterFragment() {
         // Required empty public constructor
@@ -49,7 +58,14 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_register2, container, false);
+        View view = inflater.inflate(R.layout.fragment_register, container, false);
+
+        mSpinner = view.findViewById(R.id.spinner2);
+        ArrayAdapter<String> level = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
+        level.add("Business");
+        level.add("Individual");
+        level.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinner.setAdapter(level);
 
         return view;
     }
@@ -58,7 +74,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        
+
         mEmail = view.findViewById(R.id.et_email);
         mPassword = view.findViewById(R.id.et_password);
         mConfirmPassword = view.findViewById(R.id.et_confirm_password);
@@ -71,6 +87,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
         facebook = view.findViewById(R.id.facebook);
         google = view.findViewById(R.id.google);
         twitter = view.findViewById(R.id.twitter);
+        mSpinner = view.findViewById(R.id.spinner2);
 
         mBack.setOnClickListener(this);
         mRegister.setOnClickListener(this);
@@ -80,13 +97,18 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
         twitter.setOnClickListener(this);
 
         mNavController = Navigation.findNavController(view);
+
+        ArrayAdapter<String> level = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
+        level.add("Business");
+        level.add("Individual");
+        level.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinner.setAdapter(level);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_register:
-                Log.d(TAG, "onClick: button register clicked");
                 registrationCheck();
                 break;
 
@@ -123,40 +145,41 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     private void registrationCheck() {
 
 //        check for null valued EditText fields
-        if(!isEmpty(mEmail.getText().toString())
+        if (!isEmpty(mEmail.getText().toString())
                 && !isEmpty(mPassword.getText().toString())
                 && !isEmpty(mConfirmPassword.getText().toString())
                 && !isEmpty(mName.getText().toString())
                 && !isEmpty(mPhoneNo.getText().toString())) {
 
 //            check if user has a company email address
-            if(isValidDomain(mEmail.getText().toString())) {
+            if (isValidDomain(mEmail.getText().toString())) {
 
-//                check if passwords match
-                if(mPassword.getText().toString().length() >= 6) {
+//                check if password length is greater than 6
+                if (mPassword.getText().toString().length() >= 6) {
+
+//                    check if password match
                     if (doStringsMatch(mPassword.getText().toString(), mConfirmPassword.getText().toString())) {
+
                         registerNewEmail(mEmail.getText().toString(), mPassword.getText().toString());
+
                     } else {
                         Toast.makeText(getContext(), "Passwords do not match", Toast.LENGTH_LONG).show();
                         mConfirmPassword.requestFocus();
                     }
                 } else {
                     Toast.makeText(getContext(), "Password shouldn't be less than 6 characters", Toast.LENGTH_SHORT).show();
+                    mPassword.requestFocus();
                 }
-            }
-            else {
+            } else {
                 Toast.makeText(getContext(), "Please register with company email", Toast.LENGTH_LONG).show();
             }
-        }
-        else {
+        } else {
             Toast.makeText(getContext(), "You must fill out all fields", Toast.LENGTH_LONG).show();
-//            mEmail.requestFocus();
         }
     }
 
     private void registerNewEmail(String email, String password) {
         mProgressBar.setVisibility(View.VISIBLE);
-
         FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -164,35 +187,60 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
                         Log.d(TAG, "onComplete: onComplete: " + task.isSuccessful());
 
                         if (task.isSuccessful()) {
-                            Log.d(TAG, "onComplete: AuthState: " + FirebaseAuth.getInstance()
-                                    .getCurrentUser().getUid());
+                            mProgressBar.setVisibility(View.GONE);
+                            Log.d(TAG, "onComplete: AuthState: Authenticated with: " +
+                                    FirebaseAuth.getInstance().getCurrentUser().getEmail());
 
 //                            Send the newly created user a verification mail
                             sendVerificationEmail();
 
-//                            Sign out the user
-                            FirebaseAuth.getInstance().signOut();
+                            User user = new User();
+                            user.setName(mName.getText().toString());
+                            user.setPhone(mPhoneNo.getText().toString());
+                            user.setEmail(mEmail.getText().toString());
+                            user.setLevel(mSpinner.getSelectedItem().toString());
+                            user.setUser_id(FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-//                            Redirect the user to the login screen
-                            Log.d(TAG, "onComplete: redirecting to login screen");
-                            redirectToLoginScreen();
-                        }
-                        else {
-//                            Toast.makeText(getContext(), "Unable to register",
-//                                    Toast.LENGTH_LONG).show();
-                            if(task.getException() instanceof FirebaseAuthUserCollisionException) {
+                            FirebaseDatabase.getInstance().getReference()
+                                    .child(getString(R.string.dbnode_users))
+                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+
+//                                   Sign out the user
+                                    FirebaseAuth.getInstance().signOut();
+
+//                                   Redirect the user to the login screen
+                                    Log.d(TAG, "onComplete: redirecting to login screen");
+                                    redirectToLoginScreen();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    mProgressBar.setVisibility(View.GONE);
+                                    FirebaseAuth.getInstance().signOut();
+                                    Toast.makeText(getContext(), "Unable to register: " +
+                                            e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        } else {
+                            mProgressBar.setVisibility(View.GONE);
+                            if (task.getException() instanceof FirebaseAuthUserCollisionException) {
                                 Toast.makeText(getContext(), "You are already registered", Toast.LENGTH_SHORT).show();
+                                redirectToLoginScreen();
                             } else {
-                                Toast.makeText(getContext(), "Unable to register: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "Unable to register: "
+                                        + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                             }
                         }
-                        mProgressBar.setVisibility(View.GONE);
                     }
                 });
     }
 
     private void redirectToLoginScreen() {
-        Log.d(TAG, "redirectToLoginScreen: called");
+        Log.d(TAG, "redirectToLoginScreen: redirecting");
         mNavController.navigate(R.id.action_registerFragment_to_loginFragment);
     }
 
@@ -235,7 +283,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onResume() {
         super.onResume();
-//        checkAuthenticationState();
+        checkAuthenticationState();
     }
 
     private void checkAuthenticationState() {
@@ -243,13 +291,46 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            Log.d(TAG, "checkAuthenticationState: User is null. Navigating back to home screen");
-
-            Intent intent = new Intent(getContext(), LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+            Log.d(TAG, "checkAuthenticationState: User is null");
         } else {
-            Log.d(TAG, "checkAuthenticationState: User is authenticated");
+            queryDatabase();
         }
+    }
+
+    private void queryDatabase() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+
+        Query query = reference.child(getString(R.string.dbnode_users))
+                .orderByKey()
+                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                //this loop will return a single result
+                for (DataSnapshot singleSnapshot : snapshot.getChildren()) {
+                    Log.d(TAG, "onDataChange: (QUERY METHOD 1) found user: "
+                            + singleSnapshot.getValue(User.class).toString());
+                    User user = singleSnapshot.getValue(User.class);
+                    String level = user.getLevel();
+
+                    if (level.equals(getString(R.string.individual))) {
+                        Log.d(TAG, "checkAuthenticationState: User is authenticated with an individual account");
+                        Intent intent = new Intent(getContext(), IndividualActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    } else if (level.equals(getString(R.string.business))) {
+                        Log.d(TAG, "checkAuthenticationState: User is authenticated with a business account");
+                        Intent intent = new Intent(getContext(), BusinessActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 }
