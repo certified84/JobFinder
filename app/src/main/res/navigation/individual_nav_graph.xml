@@ -6,25 +6,21 @@
     app:startDestination="@id/homeFragment">
   <fragment
       android:id="@+id/homeFragment"
-      android:name="com.certified.jobfinder.botton_nav_menu_fragments.HomeFragment"
-      android:label="Home"
-      tools:layout="@layout/fragment_home" >
-    <action
-        android:id="@+id/action_homeFragment_to_newOfferFragment"
-        app:destination="@id/newOfferFragment" />
-  </fragment>
+      android:name="com.certified.jobfinder.individual_bottom_nav_menu_fragments.HomeFragment"
+      android:label="Explore"
+      tools:layout="@layout/fragment_home" />
   <fragment
       android:id="@+id/profileFragment"
-      android:name="com.certified.jobfinder.botton_nav_menu_fragments.ProfileFragment"
+      android:name="com.certified.jobfinder.individual_bottom_nav_menu_fragments.ProfileFragment"
       android:label="Profile"
       tools:layout="@layout/fragment_profile" />
   <fragment
       android:id="@+id/jobsFragment"
-      android:name="com.certified.jobfinder.botton_nav_menu_fragments.JobsFragment"
+      android:name="com.certified.jobfinder.individual_bottom_nav_menu_fragments.JobsFragment"
       android:label="My jobs" />
   <fragment
       android:id="@+id/alertsFragment"
-      android:name="com.certified.jobfinder.botton_nav_menu_fragments.AlertFragment"
+      android:name="com.certified.jobfinder.individual_bottom_nav_menu_fragments.AlertFragment"
       android:label="Alerts"
       tools:layout="@layout/fragment_alert" />
   <fragment
@@ -46,9 +42,5 @@
       android:id="@+id/newOfferFragment"
       android:name="com.certified.jobfinder.NewOfferFragment"
       android:label="New offer"
-      tools:layout="@layout/fragment_new_offer" >
-    <action
-        android:id="@+id/action_newOfferFragment_to_homeFragment"
-        app:destination="@id/homeFragment" />
-  </fragment>
+      tools:layout="@layout/fragment_new_offer" />
 </navigation>

@@ -4,17 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".botton_nav_menu_fragments.JobsFragment" >
+    tools:context=".individual_bottom_nav_menu_fragments.JobsFragment" >
 
-    <TextView
-        android:id="@+id/textView12"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="JOBS FRAGMENT"
-        android:textSize="30sp"
-        android:textStyle="bold"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recylcler_view_jobs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        tools:listitem="@layout/saved_jobs_list" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

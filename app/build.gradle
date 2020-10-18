@@ -55,6 +55,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:21.5.0'
     implementation 'com.google.firebase:firebase-messaging:20.2.4'
     implementation 'com.google.firebase:firebase-database:19.3.1'
+    implementation 'com.firebaseui:firebase-ui-firestore:6.3.0'
+    implementation 'com.firebaseui:firebase-ui-storage:6.3.0'
 
 //    Like button
     implementation 'com.github.jd-alexander:LikeButton:0.2.3'
@@ -69,6 +71,9 @@ dependencies {
 //    Room persistence library
     implementation "androidx.room:room-runtime:2.2.5"
     annotationProcessor "androidx.room:room-compiler:2.2.5"
+
+//    SmoothBottomBar
+    implementation 'com.github.ibrahimsn98:SmoothBottomBar:1.7.6'
 
 //    implementation "androidx.core:core-ktx:+"
 //    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"

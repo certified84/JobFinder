@@ -1,5 +1,7 @@
 package com.certified.jobfinder;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -8,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,16 +21,29 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.certified.jobfinder.model.Job;
+import com.certified.jobfinder.model.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import static android.text.TextUtils.isEmpty;
 
 
 public class NewOfferFragment extends Fragment {
+
+    private static final String TAG = "NewOfferFragment";
 
     public NewOfferFragment() {
         // Required empty public constructor
@@ -59,12 +75,14 @@ public class NewOfferFragment extends Fragment {
         upload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                if (!isEmpty(etJobTitle.getText().toString())
-                        && !isEmpty(etDescription.getText().toString())
-                        && !isEmpty(etLocation.getText().toString())
-                        && !isEmpty(etRequirements.getText().toString())
-                        && !isEmpty(etSalary.getText().toString())) {
+                Log.d(TAG, "onClick: Phone: " + FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber() + "\n" +
+                        "Name: " + FirebaseAuth.getInstance().getCurrentUser().getDisplayName() + "\n" +
+                        "Email: " + FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                if (!isEmpty(etJobTitle.getText().toString().trim())
+                        && !isEmpty(etDescription.getText().toString().trim())
+                        && !isEmpty(etLocation.getText().toString().trim())
+                        && !isEmpty(etRequirements.getText().toString().trim())
+                        && !isEmpty(etSalary.getText().toString().trim())) {
                     uploadNewOffer();
                 } else {
                     Toast.makeText(getContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
@@ -77,34 +95,66 @@ public class NewOfferFragment extends Fragment {
     private void uploadNewOffer() {
         progressBar.setVisibility(View.VISIBLE);
 
-        Job job = new Job();
-        job.setBusinessName(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
-        job.setProfileImageUrl(FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl());
-        job.setJobTitle(etJobTitle.getText().toString());
-        job.setLocation(etLocation.getText().toString());
-        job.setRequirements(etRequirements.getText().toString());
-        job.setDescription(etDescription.getText().toString());
-        job.setSalary(etSalary.getText().toString());
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference myOfferRef = db.collection(getString(R.string.dbnode_jobs))
+                .document(FirebaseAuth.getInstance().getCurrentUser().getUid()).collection("my_offers").document();
 
-        FirebaseDatabase.getInstance().getReference()
-                .child(getString(R.string.dbnode_jobs))
-                .child(FirebaseAuth.getInstance().getCurrentUser().getDisplayName())
-                .setValue(job).addOnCompleteListener(new OnCompleteListener<Void>() {
+        DocumentReference jobsRef = db.collection(getString(R.string.dbnode_jobs))
+                .document();
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference.child(getString(R.string.dbnode_users))
+                .orderByKey()
+                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                progressBar.setVisibility(View.GONE);
-                if (task.isSuccessful()) {
-                    Toast.makeText(getContext(), "Upload successful", Toast.LENGTH_SHORT).show();
-                    mNavController.navigate(R.id.action_newOfferFragment_to_homeFragment);
-                } else {
-                    Toast.makeText(getContext(), "Unable to upload: " + task.getException(), Toast.LENGTH_SHORT).show();
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                //this loop will return a single result
+                for (DataSnapshot singleSnapshot : snapshot.getChildren()) {
+                    Log.d(TAG, "onDataChange: (QUERY METHOD 1) found user: "
+                            + singleSnapshot.getValue(User.class).toString());
+                    User user = singleSnapshot.getValue(User.class);
+
+                    String jobTitle = etJobTitle.getText().toString();
+                    String businessName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+                    String businessEmail = user.getEmail();
+                    String businessPhone = user.getPhone();
+                    String businessLocation = user.getLocation();
+                    String description = etDescription.getText().toString();
+                    String location = etLocation.getText().toString();
+                    String requirement = etRequirements.getText().toString();
+                    String salary = etSalary.getText().toString();
+                    String id = myOfferRef.getId();
+                    String creatorId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                    Uri profileImageUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl();
+
+                    Job job = new Job(id, businessName, businessEmail, businessPhone, businessLocation, jobTitle,
+                            description, location, profileImageUrl, requirement, salary, null, creatorId);
+
+                    jobsRef.set(job)
+                            .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "onComplete: Saved job to all jobs collection");
+                        } else
+                            Log.d(TAG, "onComplete: Could not save job to all jobs collection");
+                    });
+
+                    myOfferRef.set(job)
+                            .addOnCompleteListener(task -> {
+                                progressBar.setVisibility(View.GONE);
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(getContext(), "Upload successful", Toast.LENGTH_SHORT).show();
+                                    mNavController.navigate(R.id.action_newOfferFragment_to_homeFragment);
+                                } else {
+                                    Toast.makeText(getContext(), "Unable to upload: " + task.getException(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
                 }
             }
-        }).addOnFailureListener(new OnFailureListener() {
+
             @Override
-            public void onFailure(@NonNull Exception e) {
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(getContext(), "Unable to upload: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onCancelled(@NonNull DatabaseError error) {
+
             }
         });
     }

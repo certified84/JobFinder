@@ -8,12 +8,12 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".botton_nav_menu_fragments.ProfileFragment">
+        tools:context=".individual_bottom_nav_menu_fragments.ProfileFragment">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_image"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
             app:layout_constraintBottom_toTopOf="@+id/guideline17"
             app:layout_constraintEnd_toStartOf="@+id/guideline19"
             app:layout_constraintHorizontal_bias="0.498"
@@ -33,8 +33,7 @@
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:layout_marginStart="32dp"
-            android:alpha="1"
-            android:src="@drawable/ic_profile"
+            android:src="@drawable/ic_person"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/guideline25" />
 
@@ -51,11 +50,11 @@
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/imageView8"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/textView9"
-            app:layout_constraintTop_toBottomOf="@+id/textView9" />
+            app:layout_constraintStart_toStartOf="@+id/tv_hint_name"
+            app:layout_constraintTop_toBottomOf="@+id/tv_hint_name" />
 
         <TextView
-            android:id="@+id/textView9"
+            android:id="@+id/tv_hint_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -113,21 +112,21 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <androidx.constraintlayout.widget.Group
-            android:id="@+id/group_business_name"
+            android:id="@+id/group_name"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:clickable="true"
             android:focusable="true"
-            app:constraint_referenced_ids="imageView8,textView9,tv_name"
+            app:constraint_referenced_ids="imageView8,tv_hint_name,tv_name"
             app:layout_constraintBottom_toBottomOf="@+id/tv_name"
             app:layout_constraintEnd_toEndOf="@+id/tv_name"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="@+id/imageView8"
-            app:layout_constraintTop_toTopOf="@+id/textView9"
+            app:layout_constraintTop_toTopOf="@+id/tv_hint_name"
             app:layout_constraintVertical_bias="0.0" />
 
         <androidx.constraintlayout.widget.Group
-            android:id="@+id/group_business_email"
+            android:id="@+id/group_user_email"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:clickable="true"
@@ -139,7 +138,7 @@
             app:layout_constraintTop_toTopOf="@+id/textView" />
 
         <androidx.constraintlayout.widget.Group
-            android:id="@+id/group_business_phone"
+            android:id="@+id/group_user_phone"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:constraint_referenced_ids="tv_phone,imageView10,textView11"
@@ -149,7 +148,7 @@
             app:layout_constraintTop_toTopOf="@+id/textView11" />
 
         <androidx.constraintlayout.widget.Group
-            android:id="@+id/group_business_location"
+            android:id="@+id/group_user_location"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:constraint_referenced_ids="imageView11,textView13,tv_location"
@@ -227,37 +226,37 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:src="@drawable/line_seperator"
-            app:layout_constraintBottom_toTopOf="@+id/group_business_email"
+            app:layout_constraintBottom_toTopOf="@+id/group_user_email"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/tv_name"
-            app:layout_constraintTop_toBottomOf="@+id/group_business_name" />
+            app:layout_constraintTop_toBottomOf="@+id/group_name" />
 
         <ImageView
             android:id="@+id/imageView13"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:src="@drawable/line_seperator"
-            app:layout_constraintBottom_toTopOf="@+id/group_business_phone"
+            app:layout_constraintBottom_toTopOf="@+id/group_user_phone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/tv_email"
-            app:layout_constraintTop_toBottomOf="@+id/group_business_email" />
+            app:layout_constraintTop_toBottomOf="@+id/group_user_email" />
 
         <ImageView
             android:id="@+id/imageView14"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:src="@drawable/line_seperator"
-            app:layout_constraintBottom_toTopOf="@+id/group_business_location"
+            app:layout_constraintBottom_toTopOf="@+id/group_user_location"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/tv_phone"
-            app:layout_constraintTop_toBottomOf="@+id/group_business_phone" />
+            app:layout_constraintTop_toBottomOf="@+id/group_user_phone" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline17"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.3" />
+            app:layout_constraintGuide_percent="0.25" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline18"
@@ -272,6 +271,41 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.7" />
+
+        <Button
+            android:id="@+id/btn_upload_resume"
+            android:layout_width="0dp"
+            android:layout_height="33dp"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/btn_upload"
+            android:text="upload resume"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toStartOf="@+id/guideline19"
+            app:layout_constraintStart_toStartOf="@+id/guideline18"
+            app:layout_constraintTop_toBottomOf="@+id/group_user_location" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/profile_image_change"
+            android:layout_width="64dp"
+            android:layout_height="56dp"
+            android:tint="@color/font"
+            app:layout_constraintBottom_toBottomOf="@+id/profile_image"
+            app:layout_constraintEnd_toEndOf="@+id/profile_image"
+            app:layout_constraintStart_toStartOf="@+id/profile_image"
+            app:layout_constraintTop_toBottomOf="@+id/profile_image"
+            app:srcCompat="@drawable/ic_camera"
+            tools:ignore="VectorDrawableCompat" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

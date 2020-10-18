@@ -1,78 +1,128 @@
 package com.certified.jobfinder;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import com.certified.jobfinder.model.User;
+import com.bumptech.glide.Glide;
+import com.certified.jobfinder.util.PreferenceKeys;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-public class IndividualActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener, NavigationView.OnNavigationItemSelectedListener {
+import static android.text.TextUtils.isEmpty;
+
+public class IndividualActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "IndividualActivity";
     private BottomNavigationView mBottomNavigationView;
     private AppBarConfiguration mAppBarConfiguration;
+
     private NavController mNavController;
-    private FloatingActionButton mFab;
+    private DrawerLayout mDrawer;
+    private Toolbar mToolbar;
+    private NavigationView mNavigationView;
+    private TextView mNavUserName, mNavUserEmail;
+    private ImageView mNavProfileImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_inidividual);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setContentView(R.layout.activity_individual);
+        mToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
 
 //        enableStrictMode();
         Log.d(TAG, "onCreate: Thread = " + Thread.currentThread().getName());
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        mDrawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+                this, mDrawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         );
-        drawer.setDrawerListener(toggle);
+        mDrawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
-
+        mNavigationView = findViewById(R.id.nav_view);
         mBottomNavigationView = findViewById(R.id.bottomNavigationView);
 
         // Passing each menu_individual ID as a set of Ids because each
         // menu_individual should be considered as top level destinations.
-        mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.homeFragment, R.id.aboutFragment, R.id.contactFragment, R.id.helpFragment,
-                R.id.nav_sign_out, R.id.jobsFragment, R.id.alertsFragment, R.id.profileFragment)
-                .setDrawerLayout(drawer)
-                .build();
 
+//        mAppBarConfiguration = new AppBarConfiguration.Builder(
+//                R.id.homeFragment, R.id.aboutFragment, R.id.contactFragment, R.id.helpFragment,
+//                R.id.nav_sign_out, R.id.jobsFragment, R.id.alertsFragment, R.id.profileFragment)
+//                .setDrawerLayout(mDrawer)
+//                .build();
+
+        isFirstLogin();
+        init();
+    }
+
+    public void isFirstLogin() {
+        Log.d(TAG, "isFirstLogin: checking if this is the first login");
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isFirstLogin = preferences.getBoolean(PreferenceKeys.FIRST_TIME_LOGIN, true);
+
+        if (isFirstLogin) {
+            Log.d(TAG, "isFirstLogin: Launching alert dialog");
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setMessage(getString(R.string.first_time_user_message));
+            alertDialogBuilder.setPositiveButton("Agree", (dialog, which) -> {
+                Log.d(TAG, "onClick: closing AlertDialog");
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean(PreferenceKeys.FIRST_TIME_LOGIN, false);
+                editor.apply();
+                dialog.dismiss();
+            });
+            alertDialogBuilder.setNegativeButton("Cancel", (dialogInterface, i) -> {
+                Log.d(TAG, "isFirstLogin: Closing AlertDialog and leaving the app");
+                dialogInterface.dismiss();
+                finish();
+            });
+            alertDialogBuilder.setIcon(R.drawable.logo_one);
+            alertDialogBuilder.setTitle(" ");
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        }
+    }
+
+    public void init() {
         mNavController = Navigation.findNavController(this, R.id.individual_host_fragment);
-        NavigationUI.setupWithNavController(mBottomNavigationView, mNavController);
-        NavigationUI.setupActionBarWithNavController(this, mNavController, mAppBarConfiguration);
 
+        NavigationUI.setupWithNavController(mBottomNavigationView, mNavController);
+        NavigationUI.setupWithNavController(mNavigationView, mNavController);
+
+        NavigationUI.setupActionBarWithNavController(this, mNavController);
+        NavigationUI.setupActionBarWithNavController(this, mNavController, mDrawer);
+
+//        mNavigationView.setNavigationItemSelectedListener(this);
 //        mBottomNavigationView.setOnNavigationItemSelectedListener(this);
     }
 
@@ -89,7 +139,56 @@ public class IndividualActivity extends AppCompatActivity implements BottomNavig
     @Override
     protected void onResume() {
         super.onResume();
-//        checkAuthenticationState();
+        checkAuthenticationState();
+
+        MenuItem item = mNavigationView.getCheckedItem();
+        if (item.getItemId() == R.id.aboutFragment) {
+            navigateToStartActivity();
+        }
+
+        mNavigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
+
+        updateNavHeader();
+    }
+
+    private void updateNavHeader() {
+        View headerView = mNavigationView.getHeaderView(0);
+        mNavUserEmail = headerView.findViewById(R.id.nav_user_email);
+        mNavUserName = headerView.findViewById(R.id.nav_user_name);
+        mNavProfileImage = headerView.findViewById(R.id.nav_profile_image);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String name = user.getDisplayName();
+            String email = user.getEmail();
+            Uri profileImageUrl = user.getPhotoUrl();
+
+            if (profileImageUrl != null) {
+                Glide.with(this)
+                        .load(profileImageUrl)
+                        .into(mNavProfileImage);
+            } else {
+                Glide.with(this)
+                        .load(R.drawable.icon_one)
+                        .into(mNavProfileImage);
+            }
+            mNavUserEmail.setText(email);
+            mNavUserName.setText(name);
+
+            mNavProfileImage.setOnClickListener(view -> {
+                Navigation.findNavController(IndividualActivity.this, R.id.individual_host_fragment).navigate(R.id.profileFragment);
+                mDrawer.closeDrawer(GravityCompat.START);
+            });
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawer.isOpen()) {
+            mDrawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void checkAuthenticationState() {
@@ -100,12 +199,21 @@ public class IndividualActivity extends AppCompatActivity implements BottomNavig
             Log.d(TAG, "checkAuthenticationState: User is null. Navigating to start activity");
             navigateToStartActivity();
         } else {
+            Log.d(TAG, "checkAuthenticationState: Authenticated with: " + user.getEmail());
             checkIfUserIsVerified(FirebaseAuth.getInstance().getCurrentUser());
         }
     }
 
     private void navigateToStartActivity() {
         Intent intent = new Intent(this, StartActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+    }
+
+
+    private void navigateToBusinessActivity() {
+        Intent intent = new Intent(this, BusinessActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
@@ -123,40 +231,23 @@ public class IndividualActivity extends AppCompatActivity implements BottomNavig
     }
 
     private void queryDatabase() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-
-        Query query = reference.child(getString(R.string.dbnode_users))
-                .orderByKey()
-                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                //this loop will return a single result
-                for (DataSnapshot singleSnapshot : snapshot.getChildren()) {
-                    Log.d(TAG, "onDataChange: (QUERY METHOD 1) found user: "
-                            + singleSnapshot.getValue(User.class).toString());
-                    User user = singleSnapshot.getValue(User.class);
-                    String level = user.getLevel();
-
-                    if (level.equals(getString(R.string.business))) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection(getString(R.string.dbnode_users)).document(user.getUid());
+        userRef.get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    String accountType = documentSnapshot.getString("account_type");
+                    if (accountType.equals(getString(R.string.business))) {
                         Log.d(TAG, "checkAuthenticationState: User is authenticated with a business account");
-                        Intent intent = new Intent(IndividualActivity.this, BusinessActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
+                        navigateToBusinessActivity();
                     }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+                });
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu_individual; this adds items to the action bar if it is present.
+//        getMenuInflater().inflate(R.menu.menu_individual, menu);
         getMenuInflater().inflate(R.menu.menu_individual, menu);
         return true;
     }
@@ -187,32 +278,45 @@ public class IndividualActivity extends AppCompatActivity implements BottomNavig
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+
+//            case R.id.aboutFragment:
+//                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.aboutFragment);
+//                break;
 //
-//        switch(item.getItemId()) {
 //            case R.id.homeFragment:
-//                Log.d(TAG, "onClick: Home clicked");
+//                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.homeFragment);
 //                break;
 //
-//            case R.id.profileFragment:
-//                Log.d(TAG, "onClick: Profile clicked");
+//            case R.id.contactFragment:
+//                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.contactFragment);
 //                break;
 //
-//            case R.id.jobsFragment:
-//                Log.d(TAG, "onClick: Job clicked");
+//            case R.id.helpFragment:
+//                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.helpFragment);
 //                break;
-//
-//            case R.id.alertsFragment:
-//                Log.d(TAG, "onClick: Alerts clicked");
-//                break;
-//        }
-//        item.setChecked(true);
+
+            case R.id.nav_sign_out:
+//                FirebaseAuth.getInstance().signOut();
+                navigateToStartActivity();
+                break;
+
+            case R.id.settingsFragment:
+//                return false;
+                break;
+        }
+        item.setChecked(true);
+        mDrawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-//        @Override
-//        public boolean onSupportNavigateUp() {
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        mNavController.navigateUp();
+        return true;
 //        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
 //        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
 //                || super.onSupportNavigateUp();
-//        }
+    }
 }

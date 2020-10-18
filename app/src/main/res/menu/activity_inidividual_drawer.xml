@@ -5,31 +5,41 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/homeFragment"
-            android:icon="@drawable/ic_home"
-            android:title="@string/menu_home" />
-    </group>
-    <group
-        android:checkableBehavior="single"
-        android:menuCategory="secondary">
-        <item
-            android:id="@+id/settingsFragment"
-            android:icon="@drawable/ic_settings"
-            android:title="Settings" />
-        <item
-            android:id="@+id/aboutFragment"
-            android:icon="@drawable/ic_about"
-            android:title="About us" />
-        <item
-            android:id="@+id/contactFragment"
-            android:icon="@drawable/ic_contact"
-            android:title="Contact us" />
-        <item
-            android:id="@+id/helpFragment"
-            android:icon="@drawable/ic_help"
-            android:title="Help / feedback" />
-        <item
-            android:id="@+id/nav_sign_out"
-            android:icon="@drawable/ic_logout"
-            android:title="Sign out" />
+            android:icon="@drawable/ic_search"
+            android:title="Explore" />
+        <item android:title="Communicate">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/aboutFragment"
+                        android:icon="@drawable/ic_about"
+                        android:title="About us" />
+                    <item
+                        android:id="@+id/helpFragment"
+                        android:icon="@drawable/ic_help"
+                        android:title="Help / feedback" />
+                    <item
+                        android:id="@+id/contactFragment"
+                        android:icon="@drawable/ic_contact"
+                        android:title="Contact us" />
+                </group>
+            </menu>
+        </item>
+        <item android:title="Actions">
+            <menu>
+                <group
+                    android:id="@+id/group_actions"
+                    android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/nav_sign_out"
+                        android:icon="@drawable/ic_logout"
+                        android:title="Sign out" />
+                    <item
+                        android:id="@+id/settingsFragment"
+                        android:icon="@drawable/ic_settings"
+                        android:title="Settings" />
+                </group>
+            </menu>
+        </item>
     </group>
 </menu>

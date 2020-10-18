@@ -1,23 +1,27 @@
 package com.certified.jobfinder;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.preference.PreferenceManager;
+
 import com.certified.jobfinder.model.User;
+import com.certified.jobfinder.util.PreferenceKeys;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,6 +31,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import static android.text.TextUtils.isEmpty;
 
 public class StartFragment extends Fragment implements View.OnClickListener {
 
@@ -62,6 +70,8 @@ public class StartFragment extends Fragment implements View.OnClickListener {
         Button google = view.findViewById(R.id.btn_google);
         Button facebook = view.findViewById(R.id.btn_facebook);
         Button twitter = view.findViewById(R.id.btn_twitter);
+        Switch switchDarkMode = view.findViewById(R.id.switch_dark_mode);
+//        switchDarkMode.setChecked(false);
 
         tvRegister.setOnClickListener(this);
         tvLogin.setOnClickListener(this);
@@ -114,8 +124,8 @@ public class StartFragment extends Fragment implements View.OnClickListener {
         } else {
             Log.d(TAG, "checkAuthenticationState: User is authenticated with: " +
                     FirebaseAuth.getInstance().getCurrentUser().getEmail());
-            startActivity(new Intent(getContext(), IndividualActivity.class));
-//            checkAccountSelection();
+//            startActivity(new Intent(getContext(), IndividualActivity.class));
+            checkIfUserIsVerified(user);
         }
     }
 
@@ -123,9 +133,6 @@ public class StartFragment extends Fragment implements View.OnClickListener {
     public void onStart() {
         super.onStart();
         FirebaseAuth.getInstance().addAuthStateListener(mAuthStateListener);
-//        if(mAuth.getCurrentUser() != null) {
-//            checkIfIsIndividual();
-//        }
     }
 
 
@@ -147,7 +154,7 @@ public class StartFragment extends Fragment implements View.OnClickListener {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if (user != null) {
-                    Log.d(TAG, "onAuthStateChanged: signed in " + user.getUid());
+                    Log.d(TAG, "onAuthStateChanged: signed in " + user.getEmail());
                     checkIfUserIsVerified(user);
                 } else {
                     Log.d(TAG, "onAuthStateChanged: signed out");
@@ -168,38 +175,80 @@ public class StartFragment extends Fragment implements View.OnClickListener {
     }
 
     private void queryDatabase() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-
-        Query query = reference.child(getString(R.string.dbnode_users))
-                .orderByKey()
-                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                //this loop will return a single result
-                for (DataSnapshot singleSnapshot : snapshot.getChildren()) {
-                    Log.d(TAG, "onDataChange: (QUERY METHOD 1) found user: "
-                            + singleSnapshot.getValue(User.class).toString());
-                    User user = singleSnapshot.getValue(User.class);
-                    String level = user.getLevel();
-
-                    if (level.equals(getString(R.string.individual))) {
-                        Log.d(TAG, "checkAuthenticationState: User is authenticated with an individual account");
-                        Intent intent = new Intent(getContext(), IndividualActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                    } else if (level.equals(getString(R.string.business))) {
-                        Log.d(TAG, "checkAuthenticationState: User is authenticated with a business account");
-                        Intent intent = new Intent(getContext(), BusinessActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                    }
-                }
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String accountType = preferences.getString(PreferenceKeys.ACCOUNT_TYPE, "");
+        if (!isEmpty(accountType)) {
+            if (accountType.equals("Business")) {
+                navigateToBusinessActivity();
+            } else if (accountType.equals("Individual")) {
+                navigateToIndividualActivity();
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
+        } else {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+            if (user != null) {
+                DocumentReference userRef = db.collection(getString(R.string.dbnode_users)).document(user.getUid());
+                userRef.get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            String accountType1 = documentSnapshot.getString("account_type");
+                            if (accountType1.equals(getString(R.string.individual))) {
+                                Log.d(TAG, "checkAuthenticationState: User is authenticated with an individual account");
+                                navigateToIndividualActivity();
+                            } else if (accountType1.equals(getString(R.string.business))) {
+                                Log.d(TAG, "checkAuthenticationState: User is authenticated with a business account");
+                                navigateToBusinessActivity();
+                            }
+                        });
             }
-        });
+        }
+
+//        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+//
+//        Query query = reference.child(getString(R.string.dbnode_users))
+//                .orderByKey()
+//                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
+//        query.addListenerForSingleValueEvent(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                //this loop will return a single result
+//                for (DataSnapshot singleSnapshot : snapshot.getChildren()) {
+//                    Log.d(TAG, "onDataChange: (QUERY METHOD 1) found user: "
+//                            + singleSnapshot.getValue(User.class).toString());
+//                    User user = singleSnapshot.getValue(User.class);
+//                    String level = user.getLevel();
+//
+//                    if (level.equals(getString(R.string.individual))) {
+//                        Log.d(TAG, "checkAuthenticationState: User is authenticated with an individual account");
+//                        Intent intent = new Intent(getContext(), IndividualActivity.class);
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                        startActivity(intent);
+//                    } else if (level.equals(getString(R.string.business))) {
+//                        Log.d(TAG, "checkAuthenticationState: User is authenticated with a business account");
+//                        Intent intent = new Intent(getContext(), BusinessActivity.class);
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                        startActivity(intent);
+//                    }
+//                }
+//            }
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//
+//            }
+//        });
+    }
+
+    public void navigateToBusinessActivity() {
+        Intent intent = new Intent(getContext(), BusinessActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        getActivity().finish();
+    }
+
+    private void navigateToIndividualActivity() {
+        Intent intent = new Intent(getContext(), IndividualActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        getActivity().finish();
     }
 }

@@ -1,19 +1,27 @@
 package com.certified.jobfinder.model;
 
+import android.net.Uri;
+
+import androidx.annotation.NonNull;
+
 public class User {
 
     private String name;
     private String email;
     private String phone;
-    private String level;
+    private String account_type;
     private String user_id;
+    private String location;
+    private Uri profile_image;
 
-    public User(String name, String email, String phone, String level, String user_id) {
+    public User(String name, String email, String phone, String account_type, String user_id, String location, Uri profile_image) {
         this.name = name;
         this.email = email;
         this.phone = phone;
-        this.level = level;
+        this.account_type = account_type;
         this.user_id = user_id;
+        this.location = location;
+        this.profile_image = profile_image;
     }
 
     public User() {
@@ -44,12 +52,12 @@ public class User {
         this.phone = phone;
     }
 
-    public String getLevel() {
-        return level;
+    public String getAccount_type() {
+        return account_type;
     }
 
-    public void setLevel(String level) {
-        this.level = level;
+    public void setAccount_type(String account_type) {
+        this.account_type = account_type;
     }
 
     public String getUser_id() {
@@ -58,5 +66,27 @@ public class User {
 
     public void setUser_id(String user_id) {
         this.user_id = user_id;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public Uri getProfile_image() {
+        return profile_image;
+    }
+
+    public void setProfile_image(Uri profile_image) {
+        this.profile_image = profile_image;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

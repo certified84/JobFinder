@@ -1,4 +1,4 @@
-package com.certified.jobfinder.botton_nav_menu_fragments;
+package com.certified.jobfinder.individual_bottom_nav_menu_fragments;
 
 import android.os.Bundle;
 

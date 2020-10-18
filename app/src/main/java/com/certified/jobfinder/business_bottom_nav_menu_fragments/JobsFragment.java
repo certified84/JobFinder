@@ -1,12 +1,12 @@
-package com.certified.jobfinder.botton_nav_menu_fragments;
+package com.certified.jobfinder.business_bottom_nav_menu_fragments;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
 
 import com.certified.jobfinder.R;
 

@@ -1,5 +1,6 @@
 package com.certified.jobfinder;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,6 +26,7 @@ import com.certified.jobfinder.model.User;
 import com.certified.jobfinder.util.PreferenceKeys;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
@@ -36,6 +38,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginFragment extends Fragment implements View.OnClickListener {
 
@@ -97,6 +102,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         google.setOnClickListener(this);
         facebook.setOnClickListener(this);
         twitter.setOnClickListener(this);
+        mForgotPassword.setOnClickListener(this);
     }
 
     @Override
@@ -115,7 +121,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 break;
 
             case R.id.tv_password_reset:
-                sendPasswordResetLink();
+                launchPasswordResetDialog();
                 break;
 
             case R.id.back:
@@ -134,12 +140,58 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void sendPasswordResetLink() {
+    private void launchPasswordResetDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog alertDialog;
+
+        LayoutInflater inflater = this.getLayoutInflater();
+        View v = inflater.inflate(R.layout.dialog_password_reset, null);
+
+        alertDialog = builder.create();
+        alertDialog.setView(v);
+
+        EditText etEmail = v.findViewById(R.id.et_email);
+        TextView tvCancel = v.findViewById(R.id.tv_cancel);
+        TextView tvReset = v.findViewById(R.id.tv_password_reset);
+        ProgressBar progressBar = v.findViewById(R.id.progressBar);
+
+        tvCancel.setOnClickListener(view -> alertDialog.dismiss());
+        tvReset.setOnClickListener(view -> {
+            if (!isEmpty(etEmail.getText().toString().trim())) {
+                progressBar.setVisibility(View.VISIBLE);
+                FirebaseAuth.getInstance().sendPasswordResetEmail(etEmail.getText().toString())
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "onComplete: Password reset link sent");
+                                    Toast.makeText(getContext(), "Check your email for the reset link",
+                                            Toast.LENGTH_SHORT).show();
+                                    alertDialog.dismiss();
+                                } else {
+                                    Toast.makeText(getContext(), "An error occurred: " + task.getException(),
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                                progressBar.setVisibility(View.GONE);
+                            }
+                        });
+            } else {
+                Toast.makeText(getContext(), "Email field is required", Toast.LENGTH_SHORT).show();
+            }
+        });
+        alertDialog.show();
     }
 
-    private void navigateToBusinessActivity() {
-        startActivity(new Intent(getContext(), BusinessActivity.class));
-        getActivity().finish();
+    public void navigateToBusinessActivity() {
+        Intent intent = new Intent(getContext(), BusinessActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
+    public void navigateToIndividualActivity() {
+        Intent intent = new Intent(getContext(), IndividualActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     private void signInUser() {
@@ -151,75 +203,44 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
             FirebaseAuth.getInstance().signInWithEmailAndPassword(mEmail.getText().toString(),
                     mPassword.getText().toString())
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-//                                Log.d(TAG, "onComplete: signed in with: " + user.getEmail());
-                                mProgressBar.setVisibility(View.GONE);
-                                        Toast.makeText(getContext(), "Authenticated with: " +
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                            if (user != null) {
+                                checkIfUserIsVerified(user);
+                                Toast.makeText(getContext(), "Authenticated with: " +
                                                 FirebaseAuth.getInstance().getCurrentUser().getEmail(),
-                                                Toast.LENGTH_LONG).show();
-
-//                                        Log.d(TAG, "onComplete: Navigating to individual activity");
-
-//                                        Intent intent = new Intent(getContext(), IndividualActivity.class);
-//                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                                        startActivity(intent);
-
-                                checkIfUserIsVerified(FirebaseAuth.getInstance().getCurrentUser());
-
-                            } else {
-                                mProgressBar.setVisibility(View.GONE);
+                                        Toast.LENGTH_LONG).show();
                             }
+                        } else {
+                            Toast.makeText(getContext(), "Unable to login: " + task.getException(), Toast.LENGTH_SHORT).show();
                         }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    mProgressBar.setVisibility(View.GONE);
-                    Toast.makeText(getContext(), "Unable to register. " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    Log.d(TAG, "onFailure: Unable to register. " + Thread.currentThread().getId());
-                }
-            });
+                        mProgressBar.setVisibility(View.GONE);
+                    });
         } else {
             Toast.makeText(getContext(), "All fields are required", Toast.LENGTH_LONG).show();
         }
     }
 
     private void queryDatabase() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection(getString(R.string.dbnode_users)).document(user.getUid());
 
-        Query query = reference.child(getString(R.string.dbnode_users))
-                .orderByKey()
-                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                //this loop will return a single result
-                for (DataSnapshot singleSnapshot : snapshot.getChildren()) {
-                    Log.d(TAG, "onDataChange: (QUERY METHOD 1) found user: "
-                            + singleSnapshot.getValue(User.class).toString());
-                    User user = singleSnapshot.getValue(User.class);
-                    String level = user.getLevel();
-
-                    if (level.equals(getString(R.string.individual))) {
-                        Log.d(TAG, "checkAuthenticationState: User is authenticated with an individual account");
-                        Intent intent = new Intent(getContext(), IndividualActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                    } else if (level.equals(getString(R.string.business))) {
-                        Log.d(TAG, "checkAuthenticationState: User is authenticated with a business account");
-                        Intent intent = new Intent(getContext(), BusinessActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
+        userRef.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        String accountType = documentSnapshot.getString("account_type");
+                        if (accountType.equals(getString(R.string.individual))) {
+                            Log.d(TAG, "checkAuthenticationState: User is authenticated with an individual account");
+                            navigateToIndividualActivity();
+                        } else if (accountType.equals(getString(R.string.business))) {
+                            Log.d(TAG, "checkAuthenticationState: User is authenticated with a business account");
+                            navigateToBusinessActivity();
+                        }
                     }
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+                });
     }
 
     private boolean isEmpty(String String) {
@@ -250,23 +271,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         };
     }
 
-//    public void checkIfUserIsVerified(FirebaseUser user) {
-//        if (user.isEmailVerified()) {
-//            Log.d(TAG, "onAuthStateChanged: signed in" + user.getUid());
-//            Toast.makeText(getContext(), "Authenticated with: " + user.getEmail(),
-//                    Toast.LENGTH_LONG).show();
-//            Intent intent = new Intent(getContext(), IndividualActivity.class);
-//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//            startActivity(intent);
-//        } else {
-//            Toast.makeText(getContext(), "Check your Email inbox for a verification " +
-//                    "link", Toast.LENGTH_LONG).show();
-//            FirebaseAuth.getInstance().signOut();
-//        }
-//    }
-
     private void checkIfUserIsVerified(FirebaseUser user) {
-
         if (user.isEmailVerified()) {
             queryDatabase();
         } else {

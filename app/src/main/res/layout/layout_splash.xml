@@ -3,16 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/splash_frame"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".SplashActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/splash_background"
-        tools:context=".SplashActivity">
+        android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/splash_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"

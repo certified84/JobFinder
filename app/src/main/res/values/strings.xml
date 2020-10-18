@@ -53,19 +53,36 @@
     <string name="tag_fragment_jobs">Jobs Fragment</string>
     <string name="tag_fragment_alert">Alert Fragment</string>
     <string name="title_activity_b_o">BOActivity</string>
-    <string name="dbnode_users">users</string>
     <string name="login_with_google">Login With Google</string>
     <string name="login_with_facebook">Login With Facebook</string>
     <string name="login_with_twitter">Login With Twitter</string>
     <string name="create_account">Create account</string>
-    <string name="dbnode_jobs">jobs</string>
-    <string name="db_subnode_level">level</string>
     <string name="email">Email</string>
-    <string name="name">Name</string>
+    <string name="name">Full Name</string>
     <string name="phone">Phone</string>
     <string name="location">Location</string>
     <string name="save">save</string>
     <string name="cancel">cancel</string>
     <string name="enter_bsiness_name">Enter bsiness name</string>
     <string name="enter_phone_no">Enter phone no</string>
+    <string name="business_name">Business name</string>
+
+    <!--     database nodes     -->
+    <string name="dbnode_jobs">jobs</string>
+    <string name="db_subnode_level">level</string>
+    <string name="dbnode_users">users</string>
+
+    <!--     database fields    -->
+    <string name="field_creator_id">creator_id</string>
+    <string name="field_security_level">security_level</string>
+    <string name="field_email">email</string>
+    <string name="field_name">name</string>
+    <string name="field_phone">phone</string>
+    <string name="field_user_id">user_id</string>
+    <string name="field_timestamp">timestamp</string>
+
+
+    <string name="first_time_user_message">Hey there! Welcome to Job Finder.\nPlease input your details in your profile section\nBy clicking \"agree\", you accept our terms of use and condition.</string>
+    <string name="first_time_open_user_message">Hey there!\nWelcome once again to Job Finder. You can edit your details here at anytime.</string>
+
 </resources>

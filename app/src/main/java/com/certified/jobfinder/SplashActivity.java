@@ -4,10 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.PreferenceManager;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -15,8 +17,13 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.certified.jobfinder.model.User;
+import com.certified.jobfinder.util.PreferenceKeys;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -25,23 +32,34 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import static android.text.TextUtils.isEmpty;
 
 public class SplashActivity extends AppCompatActivity {
 
     private static final String TAG = "SplashActivity";
-    Handler handler;
+    private ImageView splashLogo;
+    private Button btnRetry;
+    private ProgressBar mProgressBar;
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.splash_layout);
+        setContentView(R.layout.layout_splash);
 
+//        splashLogo = findViewById(R.id.splash_logo);
         handler = new Handler();
         handler.postDelayed(() -> {
             Log.d(TAG, "run: Thread = " + Thread.currentThread().getId());
-            checkConnectivity();
+//            checkConnectivity();
 //                navigateToBusinessActivity();
+            checkAuthenticationState();
         }, 3000);
+
     }
 
     private void checkConnectivity() {
@@ -53,8 +71,20 @@ public class SplashActivity extends AppCompatActivity {
             checkAuthenticationState();
         } else {
             Log.d(TAG, "checkConnectivity: No connection");
-//            displayFailureDialog();
-            initFailureFragment();
+            setContentView(R.layout.layout_no_connection);
+            mProgressBar = findViewById(R.id.progressBar);
+            btnRetry = findViewById(R.id.btn_retry);
+            btnRetry.setOnClickListener(view -> {
+                mProgressBar.setVisibility(View.VISIBLE);
+                handler = new Handler();
+                handler.postDelayed(() -> {
+                    Log.d(TAG, "run: Thread = " + Thread.currentThread().getId());
+                    mProgressBar.setVisibility(View.GONE);
+//                    checkConnectivity();
+                    navigateToIndividualActivity();
+//                    navigateToBusinessActivity();
+                }, 3000);
+            });
         }
     }
 
@@ -66,83 +96,39 @@ public class SplashActivity extends AppCompatActivity {
             Log.d(TAG, "checkAuthenticationState: User is null");
             startActivity(new Intent(this, StartActivity.class));
             finish();
-//            navigateToBusinessActivity();
         } else {
             queryDatabase();
-//            navigateToBusinessActivity();
         }
     }
 
     private void queryDatabase() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-
-        Query query = reference.child(getString(R.string.dbnode_users))
-                .orderByKey()
-                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                //this loop will return a single result
-                for (DataSnapshot singleSnapshot : snapshot.getChildren()) {
-                    Log.d(TAG, "onDataChange: (QUERY METHOD 1) found user: "
-                            + singleSnapshot.getValue(User.class).toString());
-                    User user = singleSnapshot.getValue(User.class);
-                    String level = user.getLevel();
-
-                    if (level.equals(getString(R.string.individual))) {
-                        Log.d(TAG, "checkAuthenticationState: User is authenticated with an individual account");
-                        Intent intent = new Intent(SplashActivity.this, IndividualActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                    } else if (level.equals(getString(R.string.business))) {
-                        Log.d(TAG, "checkAuthenticationState: User is authenticated with a business account");
-                        Intent intent = new Intent(SplashActivity.this, BusinessActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        if (user != null) {
+            DocumentReference userRef = db.collection(getString(R.string.dbnode_users)).document(user.getUid());
+            userRef.get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        String accountType = documentSnapshot.getString("account_type");
+                        if (accountType.equals(getString(R.string.individual))) {
+                            Log.d(TAG, "checkAuthenticationState: User is authenticated with an individual account");
+                            navigateToIndividualActivity();
+                        } else if (accountType.equals(getString(R.string.business))) {
+                            Log.d(TAG, "checkAuthenticationState: User is authenticated with a business account");
+                            navigateToBusinessActivity();
+                        }
+                    });
+        }
     }
 
     public void navigateToBusinessActivity() {
-        startActivity(new Intent(this, BusinessActivity.class));
-        finish();
+        Intent intent = new Intent(this, BusinessActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
     private void navigateToIndividualActivity() {
-        startActivity(new Intent(this, IndividualActivity.class));
-        finish();
-    }
-
-    private void initFailureFragment() {
-        Log.d(TAG, "initFailureFragment: called");
-        FailureFragment failureFragment = new FailureFragment();
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.splash_frame, failureFragment, "Second Fragment");
-        transaction.commit();
-//        finish();
-    }
-
-    public void displayFailureDialog() {
-        LayoutInflater inflater = this.getLayoutInflater();
-        View v = inflater.inflate(R.layout.failure_dialog, null);
-        AlertDialog.Builder builder;
-        builder = new AlertDialog.Builder(this);
-        AlertDialog alertDialog = builder.create();
-        alertDialog.setView(v);
-        alertDialog.show();
-        alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                dialogInterface.dismiss();
-                finish();
-            }
-        });
+        Intent intent = new Intent(this, IndividualActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 }

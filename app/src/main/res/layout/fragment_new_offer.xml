@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:ems="10"
-        android:hint="Locatioin"
+        android:hint="@string/location"
         android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="@+id/et_job_title"
         app:layout_constraintStart_toStartOf="@+id/et_job_title"

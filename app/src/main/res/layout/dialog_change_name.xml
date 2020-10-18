@@ -18,7 +18,7 @@
             android:layout_marginStart="32dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
-            android:text="@string/enter_bsiness_name"
+            android:text="Enter name"
             app:layout_constraintBottom_toTopOf="@+id/et_change_name"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -57,17 +57,6 @@
             android:textColor="@color/accentGreen"
             app:layout_constraintEnd_toStartOf="@+id/tv_save"
             app:layout_constraintTop_toTopOf="@+id/tv_save" />
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
