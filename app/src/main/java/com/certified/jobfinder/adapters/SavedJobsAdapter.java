@@ -117,6 +117,10 @@ public class SavedJobsAdapter extends FirestoreRecyclerAdapter<SavedJob, SavedJo
         });
     }
 
+    public void deleteJob(int position) {
+        getSnapshots().getSnapshot(position).getReference().delete();
+    }
+
     @NonNull
     @Override
     public SavedJobsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

@@ -79,7 +79,8 @@ public class ProfileFragment extends Fragment {
         btnUploadResume = view.findViewById(R.id.btn_upload_resume);
 
         isFirstOpen();
-        getUserAccountDetails();
+//        getUserAccountDetails();
+        setUserAccountDetails();
         return view;
     }
 
@@ -110,22 +111,21 @@ public class ProfileFragment extends Fragment {
 
         if (isFirstOpen) {
             Log.d(TAG, "isFirstLogin: Launching alert dialog");
-            mBuilder.setMessage(getString(R.string.first_time_open_user_message));
-            mBuilder.setPositiveButton("Ok", (dialog, which) -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setMessage(getString(R.string.first_time_open_user_message));
+            builder.setPositiveButton("Ok", (dialog, which) -> {
                 Log.d(TAG, "onClick: closing AlertDialog");
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putBoolean(FIRST_TIME_OPEN, false);
                 editor.apply();
-                setUserAccountDetails();
+//                setUserAccountDetails();
                 dialog.dismiss();
             });
-            mBuilder.setNegativeButton("Cancel", (dialogInterface, i) -> {
-                dialogInterface.dismiss();
-            });
-            mBuilder.setIcon(R.drawable.logo_one);
-            mBuilder.setTitle(" ");
-            mAlertDialog = mBuilder.create();
-            mAlertDialog.show();
+            builder.setIcon(R.drawable.logo_one);
+            builder.setTitle(" ");
+
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
         }
     }
 
@@ -148,16 +148,6 @@ public class ProfileFragment extends Fragment {
                             tvEmail.setText(email);
                             tvPhone.setText(phone);
                             tvLocation.setText(location);
-
-                            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-                            SharedPreferences.Editor editor = preferences.edit();
-
-                            editor.putString(NAME, name);
-                            editor.putString(EMAIL, email);
-                            editor.putString(PHONE, phone);
-                            editor.putString(LOCATION, location);
-
-                            editor.apply();
                         }
                     }
                 });
@@ -308,6 +298,12 @@ public class ProfileFragment extends Fragment {
                     editor.putString(NAME, newName);
                     Toast.makeText(getContext(), "Name changed", Toast.LENGTH_SHORT).show();
                     editor.apply();
+
+//                    Update the user display name in firebase auth
+                    UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder()
+                            .setDisplayName(newName)
+                            .build();
+                    user.updateProfile(profileChangeRequest);
 
                     mAlertDialog.dismiss();
 

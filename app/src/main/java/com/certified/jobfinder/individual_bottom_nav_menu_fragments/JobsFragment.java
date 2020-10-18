@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -71,6 +72,19 @@ public class JobsFragment extends Fragment {
         savedJobsRecyclerView.setAdapter(mSavedJobsAdapter);
         mLinearLayoutManager = new LinearLayoutManager(getContext());
         savedJobsRecyclerView.setLayoutManager(mLinearLayoutManager);
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                mSavedJobsAdapter.deleteJob(viewHolder.getAdapterPosition());
+            }
+        }).attachToRecyclerView(savedJobsRecyclerView);
     }
 
     @Override

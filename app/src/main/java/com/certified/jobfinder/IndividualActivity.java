@@ -22,6 +22,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -123,7 +124,6 @@ public class IndividualActivity extends AppCompatActivity implements NavigationV
         NavigationUI.setupActionBarWithNavController(this, mNavController, mDrawer);
 
 //        mNavigationView.setNavigationItemSelectedListener(this);
-//        mBottomNavigationView.setOnNavigationItemSelectedListener(this);
     }
 
     private void enableStrictMode() {
@@ -141,12 +141,10 @@ public class IndividualActivity extends AppCompatActivity implements NavigationV
         super.onResume();
         checkAuthenticationState();
 
-        MenuItem item = mNavigationView.getCheckedItem();
-        if (item.getItemId() == R.id.aboutFragment) {
-            navigateToStartActivity();
-        }
-
-        mNavigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
+//        MenuItem item = mNavigationView.getCheckedItem();
+//        if (item.getItemId() == R.id.nav_sign_out) {
+//            navigateToStartActivity();
+//        }
 
         updateNavHeader();
     }
@@ -176,7 +174,8 @@ public class IndividualActivity extends AppCompatActivity implements NavigationV
             mNavUserName.setText(name);
 
             mNavProfileImage.setOnClickListener(view -> {
-                Navigation.findNavController(IndividualActivity.this, R.id.individual_host_fragment).navigate(R.id.profileFragment);
+                NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.profileFragment, true).build();
+                Navigation.findNavController(IndividualActivity.this, R.id.individual_host_fragment).navigate(R.id.profileFragment, null, navOptions);
                 mDrawer.closeDrawer(GravityCompat.START);
             });
         }
@@ -278,23 +277,24 @@ public class IndividualActivity extends AppCompatActivity implements NavigationV
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.homeFragment, true).build();
         switch (item.getItemId()) {
 
-//            case R.id.aboutFragment:
-//                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.aboutFragment);
-//                break;
-//
-//            case R.id.homeFragment:
-//                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.homeFragment);
-//                break;
-//
-//            case R.id.contactFragment:
-//                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.contactFragment);
-//                break;
-//
-//            case R.id.helpFragment:
-//                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.helpFragment);
-//                break;
+            case R.id.homeFragment:
+                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.homeFragment, null, navOptions);
+                break;
+
+            case R.id.aboutFragment:
+                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.aboutFragment);
+                break;
+
+              case R.id.contactFragment:
+                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.contactFragment);
+                break;
+
+            case R.id.helpFragment:
+                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.helpFragment);
+                break;
 
             case R.id.nav_sign_out:
 //                FirebaseAuth.getInstance().signOut();

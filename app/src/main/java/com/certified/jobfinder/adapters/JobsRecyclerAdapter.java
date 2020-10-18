@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -53,8 +54,6 @@ public class JobsRecyclerAdapter extends FirestoreRecyclerAdapter<Job, JobsRecyc
     //    Firebase
     public FirebaseFirestore db = FirebaseFirestore.getInstance();
     public FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-    public DocumentReference savedJobRef;
-    private DocumentReference reference;
 
     public JobsRecyclerAdapter(@NonNull FirestoreRecyclerOptions<Job> options) {
         super(options);
@@ -76,9 +75,15 @@ public class JobsRecyclerAdapter extends FirestoreRecyclerAdapter<Job, JobsRecyc
 
         Uri profileImageUrl = model.getProfile_image_url();
 
-        Glide.with(mContext)
-                .load(R.drawable.logo_one)
-                .into(holder.ivBusinessProfileImage);
+        if (profileImageUrl != null ) {
+            Glide.with(mContext)
+                    .load(profileImageUrl)
+                    .into(holder.ivBusinessProfileImage);
+        } else {
+            Glide.with(mContext)
+                    .load(R.drawable.logo_one)
+                    .into(holder.ivBusinessProfileImage);
+        }
         holder.tvJobTitle.setText(model.getJob_title());
         holder.tvBusinessName.setText(model.getBusiness_name() + " --- " + model.getLocation());
         holder.tvDescription.setText("Description: " + model.getDescription());
@@ -86,15 +91,15 @@ public class JobsRecyclerAdapter extends FirestoreRecyclerAdapter<Job, JobsRecyc
             @Override
             public void liked(LikeButton likeButton) {
                 Log.d(TAG, "liked: " + model.getId());
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-                SharedPreferences.Editor editor = preferences.edit();
-
-                Set<String> savedJobs = preferences.getStringSet(PreferenceKeys.SAVED_JOBS, new HashSet<>());
-                savedJobs.add(model.getId());
-
-                editor.putStringSet(PreferenceKeys.SAVED_JOBS, savedJobs);
-                Log.d(TAG, "liked: saved: " + model.getId());
-                editor.apply();
+//                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+//                SharedPreferences.Editor editor = preferences.edit();
+//
+//                Set<String> savedJobs = preferences.getStringSet(PreferenceKeys.SAVED_JOBS, new HashSet<>());
+//                savedJobs.add(model.getId());
+//
+//                editor.putStringSet(PreferenceKeys.SAVED_JOBS, savedJobs);
+//                Log.d(TAG, "liked: saved: " + model.getId());
+//                editor.apply();
 
                 CollectionReference savedJobRef = db.collection("saved_jobs")
                         .document(user.getUid()).collection("my_saved_jobs");
@@ -134,6 +139,7 @@ public class JobsRecyclerAdapter extends FirestoreRecyclerAdapter<Job, JobsRecyc
                                             .addOnCompleteListener(task1 -> {
                                                 if (task1.isSuccessful()) {
                                                     Log.d(TAG, "onComplete: Job saved: " + saveJob.getId());
+                                                    Toast.makeText(mContext, "Job added to saved jobs", Toast.LENGTH_SHORT).show();
                                                 }
                                             });
                                 }
@@ -144,15 +150,15 @@ public class JobsRecyclerAdapter extends FirestoreRecyclerAdapter<Job, JobsRecyc
             @Override
             public void unLiked(LikeButton likeButton) {
                 Log.d(TAG, "unliked: " + model.getId());
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-                SharedPreferences.Editor editor = preferences.edit();
-
-                Set<String> savedJobs = preferences.getStringSet(PreferenceKeys.SAVED_JOBS, new HashSet<>());
-                savedJobs.remove(model.getId());
-
-                editor.putStringSet(PreferenceKeys.SAVED_JOBS, savedJobs);
-                Log.d(TAG, "unliked: unsaved: " + model.getId());
-                editor.apply();
+//                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+//                SharedPreferences.Editor editor = preferences.edit();
+//
+//                Set<String> savedJobs = preferences.getStringSet(PreferenceKeys.SAVED_JOBS, new HashSet<>());
+//                savedJobs.remove(model.getId());
+//
+//                editor.putStringSet(PreferenceKeys.SAVED_JOBS, savedJobs);
+//                Log.d(TAG, "unliked: unsaved: " + model.getId());
+//                editor.apply();
 
                 CollectionReference savedJobColRef = db.collection("saved_jobs")
                         .document(user.getUid()).collection("my_saved_jobs");
@@ -169,6 +175,7 @@ public class JobsRecyclerAdapter extends FirestoreRecyclerAdapter<Job, JobsRecyc
                                                 .addOnCompleteListener(task12 -> {
                                                     if (task12.isSuccessful()) {
                                                         Log.d(TAG, "onComplete: Job " + savedJobId + " successfully deleted");
+                                                        Toast.makeText(mContext, "Job removed from saved job", Toast.LENGTH_SHORT).show();
                                                     }
                                                 });
                                     }
@@ -183,7 +190,7 @@ public class JobsRecyclerAdapter extends FirestoreRecyclerAdapter<Job, JobsRecyc
             Intent intent = new Intent(mContext, BusinessActivity.class);
             mContext.startActivity(intent);
         });
-//
+
         holder.ivBusinessProfileImage.setOnClickListener(view -> {
             Intent intent = new Intent(mContext, BusinessProfileActivity.class);
             intent.putExtra(IntentExtra.BUSINESS_PROFILE_IMAGE, model.getProfile_image_url());
@@ -214,13 +221,8 @@ public class JobsRecyclerAdapter extends FirestoreRecyclerAdapter<Job, JobsRecyc
         }
 
         public void checkIfSaved(String id) {
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-            Set<String> savedJobs = preferences.getStringSet(PreferenceKeys.SAVED_JOBS, new HashSet<>());
-            if (savedJobs.contains(id)) {
-                Log.d(TAG, "onComplete: Job: " + id + " is saved");
-                likeButton.setLiked(true);
-            }
-            CollectionReference savedJobRef = db.collection("saved_jobs").document(user.getUid()).collection("my_saved_jobs");
+            CollectionReference savedJobRef = db.collection("saved_jobs")
+                    .document(user.getUid()).collection("my_saved_jobs");
             savedJobRef.get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {

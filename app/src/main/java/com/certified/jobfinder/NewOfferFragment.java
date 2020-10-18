@@ -36,6 +36,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import static android.text.TextUtils.isEmpty;
@@ -95,68 +96,60 @@ public class NewOfferFragment extends Fragment {
     private void uploadNewOffer() {
         progressBar.setVisibility(View.VISIBLE);
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference myOfferRef = db.collection(getString(R.string.dbnode_jobs))
-                .document(FirebaseAuth.getInstance().getCurrentUser().getUid()).collection("my_offers").document();
 
-        DocumentReference jobsRef = db.collection(getString(R.string.dbnode_jobs))
-                .document();
+        DocumentReference userRef = db.collection("users").document(user.getUid());
+        userRef.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        Query query = reference.child(getString(R.string.dbnode_users))
-                .orderByKey()
-                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                //this loop will return a single result
-                for (DataSnapshot singleSnapshot : snapshot.getChildren()) {
-                    Log.d(TAG, "onDataChange: (QUERY METHOD 1) found user: "
-                            + singleSnapshot.getValue(User.class).toString());
-                    User user = singleSnapshot.getValue(User.class);
+                            DocumentReference myOfferRef = db.collection(getString(R.string.dbnode_jobs))
+                                    .document(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                    .collection("my_offers").document();
 
-                    String jobTitle = etJobTitle.getText().toString();
-                    String businessName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-                    String businessEmail = user.getEmail();
-                    String businessPhone = user.getPhone();
-                    String businessLocation = user.getLocation();
-                    String description = etDescription.getText().toString();
-                    String location = etLocation.getText().toString();
-                    String requirement = etRequirements.getText().toString();
-                    String salary = etSalary.getText().toString();
-                    String id = myOfferRef.getId();
-                    String creatorId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                    Uri profileImageUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl();
+                            DocumentReference jobsRef = db.collection(getString(R.string.dbnode_jobs))
+                                    .document();
 
-                    Job job = new Job(id, businessName, businessEmail, businessPhone, businessLocation, jobTitle,
-                            description, location, profileImageUrl, requirement, salary, null, creatorId);
+                            String jobTitle = etJobTitle.getText().toString();
+                            String businessName = document.getString("name");
+                            String businessEmail = document.getString("email");
+                            String businessPhone = document.getString("phone");
+                            String businessLocation = document.getString("locatioin");
+                            String description = etDescription.getText().toString();
+                            String location = etLocation.getText().toString();
+                            String requirement = etRequirements.getText().toString();
+                            String salary = etSalary.getText().toString();
+                            String id = myOfferRef.getId();
+                            String creatorId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                            Uri profileImageUrl = FirebaseAuth.getInstance().getCurrentUser().getPhotoUrl();
 
-                    jobsRef.set(job)
-                            .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            Log.d(TAG, "onComplete: Saved job to all jobs collection");
-                        } else
-                            Log.d(TAG, "onComplete: Could not save job to all jobs collection");
-                    });
+                            Job job = new Job(id, businessName, businessEmail, businessPhone, businessLocation, jobTitle,
+                                    description, location, profileImageUrl, requirement, salary, null, creatorId);
 
-                    myOfferRef.set(job)
-                            .addOnCompleteListener(task -> {
-                                progressBar.setVisibility(View.GONE);
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(getContext(), "Upload successful", Toast.LENGTH_SHORT).show();
-                                    mNavController.navigate(R.id.action_newOfferFragment_to_homeFragment);
-                                } else {
-                                    Toast.makeText(getContext(), "Unable to upload: " + task.getException(), Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                }
-            }
+                            jobsRef.set(job)
+                                    .addOnCompleteListener(task1 -> {
+                                        if (task1.isSuccessful()) {
+                                            Log.d(TAG, "onComplete: Saved job to all jobs collection");
+                                        } else
+                                            Log.d(TAG, "onComplete: Could not save job to all jobs collection");
+                                    });
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+                            myOfferRef.set(job)
+                                    .addOnCompleteListener(task2 -> {
+                                        progressBar.setVisibility(View.GONE);
+                                        if (task2.isSuccessful()) {
+                                            Toast.makeText(getContext(), "Upload successful", Toast.LENGTH_SHORT).show();
+                                            mNavController.navigate(R.id.action_newOfferFragment_to_homeFragment);
+                                        } else {
+                                            Toast.makeText(getContext(), "Unable to upload: " + task2.getException(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+                    }
+                });
     }
 
 }
