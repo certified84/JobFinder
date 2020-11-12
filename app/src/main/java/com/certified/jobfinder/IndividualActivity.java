@@ -3,6 +3,7 @@ package com.certified.jobfinder;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
@@ -10,11 +11,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,29 +33,24 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.bumptech.glide.Glide;
 import com.certified.jobfinder.util.PreferenceKeys;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import static android.text.TextUtils.isEmpty;
+import me.ibrahimsn.lib.SmoothBottomBar;
 
 public class IndividualActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String TAG = "IndividualActivity";
-    private BottomNavigationView mBottomNavigationView;
+    private SmoothBottomBar mBottomNavigationView;
     private AppBarConfiguration mAppBarConfiguration;
-
     private NavController mNavController;
     private DrawerLayout mDrawer;
     private Toolbar mToolbar;
     private NavigationView mNavigationView;
-    private TextView mNavUserName, mNavUserEmail;
-    private ImageView mNavProfileImage;
+    private NavOptions mNavOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,26 +60,21 @@ public class IndividualActivity extends AppCompatActivity implements NavigationV
         setSupportActionBar(mToolbar);
 
 //        enableStrictMode();
-        Log.d(TAG, "onCreate: Thread = " + Thread.currentThread().getName());
 
         mDrawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
-        );
-        mDrawer.setDrawerListener(toggle);
-        toggle.syncState();
+//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+//                this, mDrawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
+//        );
+//        mDrawer.addDrawerListener(toggle);
+//        toggle.syncState();
 
         mNavigationView = findViewById(R.id.nav_view);
         mBottomNavigationView = findViewById(R.id.bottomNavigationView);
 
-        // Passing each menu_individual ID as a set of Ids because each
-        // menu_individual should be considered as top level destinations.
-
-//        mAppBarConfiguration = new AppBarConfiguration.Builder(
-//                R.id.homeFragment, R.id.aboutFragment, R.id.contactFragment, R.id.helpFragment,
-//                R.id.nav_sign_out, R.id.jobsFragment, R.id.alertsFragment, R.id.profileFragment)
-//                .setDrawerLayout(mDrawer)
-//                .build();
+        mAppBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.homeFragment, R.id.contactFragment, R.id.aboutFragment, R.id.helpFragment)
+                .setOpenableLayout(mDrawer)
+                .build();
 
         isFirstLogin();
         init();
@@ -108,7 +102,7 @@ public class IndividualActivity extends AppCompatActivity implements NavigationV
                 finish();
             });
             alertDialogBuilder.setIcon(R.drawable.logo_one);
-            alertDialogBuilder.setTitle(" ");
+            alertDialogBuilder.setTitle("WELCOME");
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
         }
@@ -117,11 +111,9 @@ public class IndividualActivity extends AppCompatActivity implements NavigationV
     public void init() {
         mNavController = Navigation.findNavController(this, R.id.individual_host_fragment);
 
-        NavigationUI.setupWithNavController(mBottomNavigationView, mNavController);
         NavigationUI.setupWithNavController(mNavigationView, mNavController);
-
         NavigationUI.setupActionBarWithNavController(this, mNavController);
-        NavigationUI.setupActionBarWithNavController(this, mNavController, mDrawer);
+//        NavigationUI.setupActionBarWithNavController(this, mNavController, mAppBarConfiguration);
 
 //        mNavigationView.setNavigationItemSelectedListener(this);
     }
@@ -141,19 +133,14 @@ public class IndividualActivity extends AppCompatActivity implements NavigationV
         super.onResume();
         checkAuthenticationState();
 
-//        MenuItem item = mNavigationView.getCheckedItem();
-//        if (item.getItemId() == R.id.nav_sign_out) {
-//            navigateToStartActivity();
-//        }
-
         updateNavHeader();
     }
 
     private void updateNavHeader() {
         View headerView = mNavigationView.getHeaderView(0);
-        mNavUserEmail = headerView.findViewById(R.id.nav_user_email);
-        mNavUserName = headerView.findViewById(R.id.nav_user_name);
-        mNavProfileImage = headerView.findViewById(R.id.nav_profile_image);
+        TextView navUserEmail = headerView.findViewById(R.id.nav_user_email);
+        TextView navUserName = headerView.findViewById(R.id.nav_user_name);
+        ImageView navProfileImage = headerView.findViewById(R.id.nav_profile_image);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -164,18 +151,18 @@ public class IndividualActivity extends AppCompatActivity implements NavigationV
             if (profileImageUrl != null) {
                 Glide.with(this)
                         .load(profileImageUrl)
-                        .into(mNavProfileImage);
+                        .into(navProfileImage);
             } else {
                 Glide.with(this)
                         .load(R.drawable.icon_one)
-                        .into(mNavProfileImage);
+                        .into(navProfileImage);
             }
-            mNavUserEmail.setText(email);
-            mNavUserName.setText(name);
+            navUserEmail.setText(email);
+            navUserName.setText(name);
 
-            mNavProfileImage.setOnClickListener(view -> {
-                NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.profileFragment, true).build();
-                Navigation.findNavController(IndividualActivity.this, R.id.individual_host_fragment).navigate(R.id.profileFragment, null, navOptions);
+            navProfileImage.setOnClickListener(view -> {
+                mNavOptions = new NavOptions.Builder().setPopUpTo(R.id.profileFragment, true).build();
+                Navigation.findNavController(IndividualActivity.this, R.id.individual_host_fragment).navigate(R.id.profileFragment, null, mNavOptions);
                 mDrawer.closeDrawer(GravityCompat.START);
             });
         }
@@ -226,6 +213,7 @@ public class IndividualActivity extends AppCompatActivity implements NavigationV
             Toast.makeText(this, "Check your Email inbox for a verification " +
                     "link", Toast.LENGTH_LONG).show();
             FirebaseAuth.getInstance().signOut();
+            navigateToStartActivity();
         }
     }
 
@@ -245,55 +233,33 @@ public class IndividualActivity extends AppCompatActivity implements NavigationV
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu_individual; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_individual, menu);
-        getMenuInflater().inflate(R.menu.menu_individual, menu);
+        getMenuInflater().inflate(R.menu.bottom_nav_individual_menu, menu);
+        mBottomNavigationView.setupWithNavController(menu, mNavController);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-
-            case R.id.sign_out:
-                Log.d(TAG, "onOptionsItemSelected: sign out user");
-
-//                sign user out
-                FirebaseAuth.getInstance().signOut();
-
-//                Redirecting to login activity
-                navigateToStartActivity();
-                break;
-
-            case R.id.action_settings:
-
-                break;
-
-            default:
-                throw new IllegalStateException("Unexpected value: " + item.getItemId());
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.homeFragment, true).build();
         switch (item.getItemId()) {
 
-            case R.id.homeFragment:
-                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.homeFragment, null, navOptions);
+            case R.id.profileFragment:
+                mNavOptions = new NavOptions.Builder().setPopUpTo(R.id.profileFragment, true).build();
+                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.profileFragment, null, mNavOptions);
                 break;
 
             case R.id.aboutFragment:
-                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.aboutFragment);
+                mNavOptions = new NavOptions.Builder().setPopUpTo(R.id.aboutFragment, true).build();
+                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.aboutFragment, null, mNavOptions);
                 break;
 
-              case R.id.contactFragment:
-                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.contactFragment);
+            case R.id.contactFragment:
+                mNavOptions = new NavOptions.Builder().setPopUpTo(R.id.contactFragment, true).build();
+                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.contactFragment, null, mNavOptions);
                 break;
 
             case R.id.helpFragment:
-                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.helpFragment);
+                mNavOptions = new NavOptions.Builder().setPopUpTo(R.id.helpFragment, true).build();
+                Navigation.findNavController(this, R.id.individual_host_fragment).navigate(R.id.helpFragment, null, mNavOptions);
                 break;
 
             case R.id.nav_sign_out:
@@ -302,21 +268,18 @@ public class IndividualActivity extends AppCompatActivity implements NavigationV
                 break;
 
             case R.id.settingsFragment:
-//                return false;
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
         }
         item.setChecked(true);
         mDrawer.closeDrawer(GravityCompat.START);
-        return true;
+        return false;
     }
 
 
     @Override
     public boolean onSupportNavigateUp() {
-        mNavController.navigateUp();
-        return true;
-//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-//        return NavigationUI.navigateUp(navController, mAppBarConfiguration)
-//                || super.onSupportNavigateUp();
+        return NavigationUI.navigateUp(mNavController, mDrawer)
+                || super.onSupportNavigateUp();
     }
 }

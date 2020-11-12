@@ -43,4 +43,9 @@
       android:name="com.certified.jobfinder.NewOfferFragment"
       android:label="New offer"
       tools:layout="@layout/fragment_new_offer" />
+  <fragment
+      android:id="@+id/messageFragment"
+      android:name="com.certified.jobfinder.MessageFragment"
+      android:label="Messages"
+      tools:layout="@layout/fragment_message" />
 </navigation>

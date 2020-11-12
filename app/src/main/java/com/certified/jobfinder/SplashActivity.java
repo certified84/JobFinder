@@ -10,13 +10,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -51,6 +55,12 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_splash);
 
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window w = getWindow();
+            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            w.setStatusBarColor(Color.TRANSPARENT);
+        }
+
 //        splashLogo = findViewById(R.id.splash_logo);
         handler = new Handler();
         handler.postDelayed(() -> {
@@ -58,8 +68,9 @@ public class SplashActivity extends AppCompatActivity {
 //            checkConnectivity();
 //                navigateToBusinessActivity();
             checkAuthenticationState();
+//            startActivity(new Intent(this, ModernActivity.class));
+//            finish();
         }, 3000);
-
     }
 
     private void checkConnectivity() {
@@ -80,9 +91,7 @@ public class SplashActivity extends AppCompatActivity {
                 handler.postDelayed(() -> {
                     Log.d(TAG, "run: Thread = " + Thread.currentThread().getId());
                     mProgressBar.setVisibility(View.GONE);
-//                    checkConnectivity();
-                    navigateToIndividualActivity();
-//                    navigateToBusinessActivity();
+                    checkConnectivity();
                 }, 3000);
             });
         }

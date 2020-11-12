@@ -1,6 +1,6 @@
 # JobFinder
 
-### Experience a personilized job seeking experience towards your dream job.
+### Experience a personalized job seeking experience towards your dream job.
 
 #### Job finder is an app that:
 

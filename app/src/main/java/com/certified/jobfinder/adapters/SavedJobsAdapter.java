@@ -125,13 +125,13 @@ public class SavedJobsAdapter extends FirestoreRecyclerAdapter<SavedJob, SavedJo
     @Override
     public SavedJobsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         mContext = parent.getContext();
-        View view = LayoutInflater.from(mContext).inflate(R.layout.saved_jobs_list, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.jobs_list_new, parent, false);
         Log.d(TAG, "onCreateViewHolder: Creaated");
 
         return new SavedJobsViewHolder(view);
     }
 
-    public class SavedJobsViewHolder extends RecyclerView.ViewHolder {
+    public static class SavedJobsViewHolder extends RecyclerView.ViewHolder {
         private CardView jobDetails;
         private ImageView ivBusinessProfileImage;
         private TextView tvJobTitle, tvBusinessName, tvDescription;

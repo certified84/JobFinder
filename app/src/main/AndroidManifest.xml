@@ -12,13 +12,15 @@
         android:roundIcon="@drawable/icon_one"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".BusinessProfileActivity"
+        <activity android:name=".ModernActivity"></activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".IndividualActivity" />
+        <activity
+            android:name=".BusinessProfileActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/NoActionBar">
-
-        </activity>
-
+            android:theme="@style/NoActionBar" />
         <activity android:name=".JobDetailActivity" />
         <activity
             android:name=".SplashActivity"
@@ -34,14 +36,15 @@
             android:name=".BusinessActivity"
             android:label="@string/title_activity_business"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/NoActionBar" />
         <activity
             android:name=".StartActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/NoActionBar" />
         <activity
             android:name=".IndividualActivity"
             android:label="@string/title_activity_individual"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/NoActionBar" />
     </application>

@@ -20,7 +20,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
+                android:background="@color/primaryGreen"
                 app:popupTheme="@style/AppTheme.PopupOverlay"
                 app:titleTextAppearance="@style/TextAppearance.AppCompat.Large" />
 
@@ -28,7 +28,5 @@
 
         <include layout="@layout/content_business" />
     </LinearLayout>
-
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

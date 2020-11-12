@@ -75,7 +75,7 @@ public class JobsRecyclerAdapter extends FirestoreRecyclerAdapter<Job, JobsRecyc
 
         Uri profileImageUrl = model.getProfile_image_url();
 
-        if (profileImageUrl != null ) {
+        if (profileImageUrl != null) {
             Glide.with(mContext)
                     .load(profileImageUrl)
                     .into(holder.ivBusinessProfileImage);
@@ -91,16 +91,6 @@ public class JobsRecyclerAdapter extends FirestoreRecyclerAdapter<Job, JobsRecyc
             @Override
             public void liked(LikeButton likeButton) {
                 Log.d(TAG, "liked: " + model.getId());
-//                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-//                SharedPreferences.Editor editor = preferences.edit();
-//
-//                Set<String> savedJobs = preferences.getStringSet(PreferenceKeys.SAVED_JOBS, new HashSet<>());
-//                savedJobs.add(model.getId());
-//
-//                editor.putStringSet(PreferenceKeys.SAVED_JOBS, savedJobs);
-//                Log.d(TAG, "liked: saved: " + model.getId());
-//                editor.apply();
-
                 CollectionReference savedJobRef = db.collection("saved_jobs")
                         .document(user.getUid()).collection("my_saved_jobs");
                 savedJobRef.get()
@@ -150,16 +140,6 @@ public class JobsRecyclerAdapter extends FirestoreRecyclerAdapter<Job, JobsRecyc
             @Override
             public void unLiked(LikeButton likeButton) {
                 Log.d(TAG, "unliked: " + model.getId());
-//                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-//                SharedPreferences.Editor editor = preferences.edit();
-//
-//                Set<String> savedJobs = preferences.getStringSet(PreferenceKeys.SAVED_JOBS, new HashSet<>());
-//                savedJobs.remove(model.getId());
-//
-//                editor.putStringSet(PreferenceKeys.SAVED_JOBS, savedJobs);
-//                Log.d(TAG, "unliked: unsaved: " + model.getId());
-//                editor.apply();
-
                 CollectionReference savedJobColRef = db.collection("saved_jobs")
                         .document(user.getUid()).collection("my_saved_jobs");
                 savedJobColRef.get()

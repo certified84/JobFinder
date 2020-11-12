@@ -3,12 +3,15 @@ package com.certified.jobfinder;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.Menu;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,6 +36,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.GravityCompat;
@@ -53,8 +57,6 @@ public class BusinessActivity extends AppCompatActivity implements
 
     private static final String TAG = "BusinessActivity";
     public BottomNavigationView mBottomNavigationView;
-    private AppBarConfiguration mAppBarConfiguration;
-
     private NavController mNavController;
     private DrawerLayout mDrawer;
     private Toolbar mToolbar;
@@ -69,23 +71,20 @@ public class BusinessActivity extends AppCompatActivity implements
         mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         mDrawer = findViewById(R.id.drawer_layout);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Window w = getWindow();
+            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         );
-        mDrawer.setDrawerListener(toggle);
+        mDrawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        mNavigationView = findViewById(R.id.nav_view);
         mBottomNavigationView = findViewById(R.id.bottomNavigationView);
-
-        // Passing each menu_individual ID as a set of Ids because each
-        // menu_individual should be considered as top level destinations.
-
-//        mAppBarConfiguration = new AppBarConfiguration.Builder(
-//                R.id.homeFragment, R.id.aboutFragment, R.id.profileFragment, R.id.jobsFragment,
-//                R.id.alertsFragment, R.id.contactFragment, R.id.helpFragment, R.id.nav_log_out)
-//                .setDrawerLayout(mDrawer)
-//                .build();
+        mNavigationView = findViewById(R.id.nav_view);
 
         isFirstLogin();
         init();
@@ -126,29 +125,23 @@ public class BusinessActivity extends AppCompatActivity implements
         NavigationUI.setupWithNavController(mNavigationView, mNavController);
 
         NavigationUI.setupActionBarWithNavController(this, mNavController);
-        NavigationUI.setupActionBarWithNavController(this, mNavController, mDrawer);
 
         mNavigationView.setNavigationItemSelectedListener(this);
-//        mBottomNavigationView.setOnNavigationItemSelectedListener(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        checkAuthenticationState();
+//        checkAuthenticationState();
         updateNavHeader();
     }
 
     private void updateNavHeader() {
         View headerView = mNavigationView.getHeaderView(0);
+        headerView.setBackgroundColor(getResources().getColor(R.color.primaryDarkGreen));
         mNavUserEmail = headerView.findViewById(R.id.nav_user_email);
         mNavUserName = headerView.findViewById(R.id.nav_user_name);
         mNavProfileImage = headerView.findViewById(R.id.nav_profile_image);
-
-        Menu itemMenu = mNavigationView.getMenu();
-        MenuItem itemHome = itemMenu.findItem(R.id.homeFragment);
-        itemHome.setIcon(R.drawable.ic_home);
-        itemHome.setTitle("Home");
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
@@ -264,21 +257,13 @@ public class BusinessActivity extends AppCompatActivity implements
                 break;
 
             case R.id.action_settings:
-
-                break;
-
-            case R.id.notify:
-//                notifyMe();
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
 
 //            default:
 //                throw new IllegalStateException("Unexpected value: " + item.getItemId());
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void notifyMe() {
-
     }
 
     @Override

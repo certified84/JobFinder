@@ -47,7 +47,7 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         FirebaseAuth.getInstance().getCurrentUser();
-        jobsRecyclerView = view.findViewById(R.id.recylcler_view_home);
+        jobsRecyclerView = view.findViewById(R.id.recycler_view_home);
         mJobSeekersAdapter = new JobSeekersAdapter(getContext());
         jobsRecyclerView.setAdapter(mJobSeekersAdapter);
         mLinearLayoutManager = new LinearLayoutManager(getContext());
@@ -57,6 +57,7 @@ public class HomeFragment extends Fragment {
         mNavController = Navigation.findNavController(getActivity(), R.id.business_host_fragment);
 
         newOffer = view.findViewById(R.id.fab_new_offer);
+        newOffer.setVisibility(View.VISIBLE);
         newOffer.setOnClickListener(view1 -> {
             mNavController.navigate(R.id.action_homeFragment_to_newOfferFragment);
 //            BusinessActivity.mBottomNavigationView.setVisibility(View.GONE);
