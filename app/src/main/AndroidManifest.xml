@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.certified.jobfinder">
-
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/icon_one"
+        android:icon="@drawable/logo"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/icon_one"
+        android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".ModernActivity"></activity>
+        android:resizeableActivity="false"
+        android:theme="@style/Theme.JobFinder"
+        tools:targetApi="n">
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
@@ -25,7 +24,7 @@
         <activity
             android:name=".SplashActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/NoActionBar">
+            android:theme="@style/NoActionBarMaterial">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,14 +38,16 @@
             android:theme="@style/NoActionBar" />
         <activity
             android:name=".StartActivity"
+            android:resizeableActivity="false"
             android:screenOrientation="portrait"
-            android:theme="@style/NoActionBar" />
+            android:theme="@style/NoActionBarMaterial" />
         <activity
             android:name=".IndividualActivity"
             android:label="@string/title_activity_individual"
             android:launchMode="singleTop"
+            android:resizeableActivity="false"
             android:screenOrientation="portrait"
-            android:theme="@style/NoActionBar" />
+            android:theme="@style/NoActionBarMaterial" />
     </application>
 
 </manifest>

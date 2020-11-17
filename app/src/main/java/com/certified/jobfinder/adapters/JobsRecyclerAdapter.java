@@ -81,12 +81,13 @@ public class JobsRecyclerAdapter extends FirestoreRecyclerAdapter<Job, JobsRecyc
                     .into(holder.ivBusinessProfileImage);
         } else {
             Glide.with(mContext)
-                    .load(R.drawable.logo_one)
+                    .load(R.drawable.logo)
                     .into(holder.ivBusinessProfileImage);
         }
         holder.tvJobTitle.setText(model.getJob_title());
-        holder.tvBusinessName.setText(model.getBusiness_name() + " --- " + model.getLocation());
+        holder.tvBusinessName.setText(model.getBusiness_name());
         holder.tvDescription.setText("Description: " + model.getDescription());
+        holder.tvLocation.setText(model.getLocation());
         holder.likeButton.setOnLikeListener(new OnLikeListener() {
             @Override
             public void liked(LikeButton likeButton) {
@@ -185,7 +186,7 @@ public class JobsRecyclerAdapter extends FirestoreRecyclerAdapter<Job, JobsRecyc
     public class JobsViewHolder extends RecyclerView.ViewHolder {
         private CardView jobDetails;
         private ImageView ivBusinessProfileImage;
-        private TextView tvJobTitle, tvBusinessName, tvDescription;
+        private TextView tvJobTitle, tvBusinessName, tvDescription, tvLocation, tvSalary;
         public LikeButton likeButton;
 
         public JobsViewHolder(@NonNull View itemView) {
@@ -195,6 +196,8 @@ public class JobsRecyclerAdapter extends FirestoreRecyclerAdapter<Job, JobsRecyc
             tvBusinessName = itemView.findViewById(R.id.tv_business_name_location);
             tvJobTitle = itemView.findViewById(R.id.tv_job_title);
             tvDescription = itemView.findViewById(R.id.tv_description);
+            tvLocation = itemView.findViewById(R.id.tv_location);
+            tvSalary = itemView.findViewById(R.id.tv_salary);
             likeButton = itemView.findViewById(R.id.likeButton);
             itemView.setOnClickListener(view -> {
             });

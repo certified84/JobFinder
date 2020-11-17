@@ -5,16 +5,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 import androidx.viewpager2.widget.ViewPager2;
@@ -27,7 +26,6 @@ import com.certified.jobfinder.model.Job;
 import com.certified.jobfinder.model.SavedJob;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -47,13 +45,10 @@ public class HomeFragment extends Fragment{
 
     private JobsRecyclerAdapter mJobsRecyclerAdapter;
     private SavedJobsAdapter mSavedJobsAdapter;
-    private ViewPagerAdapter mViewPagerAdapter;
-    private GridLayoutManager mGridLayoutManager;
     private LinearLayoutManager mLinearLayoutManager;
-    private ViewPager2 mViewPager2;
-    private TabLayout mTabLayout;
-    private RecyclerView mJobsRecyclerView;
+    private RecyclerView mJobsRecyclerView, mSavedJobsRecyclerView;
     private CardView jobDetail;
+    private TextView tvDisplayName;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -70,10 +65,12 @@ public class HomeFragment extends Fragment{
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mJobsRecyclerView = view.findViewById(R.id.recycler_view_home);
-        mViewPager2 = view.findViewById(R.id.view_pager);
-        mTabLayout = view.findViewById(R.id.tabLayout);
-
+        mSavedJobsRecyclerView = view.findViewById(R.id.recycler_view_saved_jobs);
         jobDetail = view.findViewById(R.id.job_card_view);
+        tvDisplayName = view.findViewById(R.id.tv_display_name);
+
+        tvDisplayName.setText("Hello, " + user.getDisplayName());
+
         setUpJobsRecyclerView();
         setUpSavedJobsRecyclerView();
     }
@@ -87,8 +84,11 @@ public class HomeFragment extends Fragment{
 
         mJobsRecyclerAdapter = new JobsRecyclerAdapter(options);
         mJobsRecyclerView.setAdapter(mJobsRecyclerAdapter);
-        mLinearLayoutManager = new LinearLayoutManager(getContext());
+        mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         mJobsRecyclerView.setLayoutManager(mLinearLayoutManager);
+
+        mJobsRecyclerView.setClipToPadding(false);
+        mJobsRecyclerView.setClipChildren(false);
     }
 
     private void setUpSavedJobsRecyclerView() {
@@ -99,22 +99,12 @@ public class HomeFragment extends Fragment{
                 .build();
 
         mSavedJobsAdapter = new SavedJobsAdapter(options);
-        mViewPagerAdapter = new ViewPagerAdapter();
-        mViewPager2.setAdapter(mSavedJobsAdapter);
+        mSavedJobsRecyclerView.setAdapter(mSavedJobsAdapter);
+        mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        mSavedJobsRecyclerView.setLayoutManager(mLinearLayoutManager);
 
-        mViewPager2.setClipToPadding(false);
-        mViewPager2.setClipChildren(false);
-        mViewPager2.setOffscreenPageLimit(3);
-        mViewPager2.getChildAt(0).setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
-
-        CompositePageTransformer compositePageTransformer = new CompositePageTransformer();
-        compositePageTransformer.addTransformer(new MarginPageTransformer(40));
-        compositePageTransformer.addTransformer((page, position) -> {
-            float r = 1 - Math.abs(position);
-            page.setScaleY(0.05f + r + 0.05f);
-        });
-
-        mViewPager2.setPageTransformer(compositePageTransformer);
+        mSavedJobsRecyclerView.setClipToPadding(false);
+        mSavedJobsRecyclerView.setClipChildren(false);
     }
 
     @Override

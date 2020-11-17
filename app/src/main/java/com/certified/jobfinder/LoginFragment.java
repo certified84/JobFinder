@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -19,25 +18,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
-import com.certified.jobfinder.model.User;
-import com.certified.jobfinder.util.PreferenceKeys;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -55,7 +42,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     public EditText mEmail, mPassword;
     public ProgressBar mProgressBar;
     public Button mLogin;
-    public ImageView mBack, google, facebook, twitter;
+    public ImageView mBack;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -86,35 +73,29 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
         mEmail = view.findViewById(R.id.et_email);
         mPassword = view.findViewById(R.id.et_password);
         mProgressBar = view.findViewById(R.id.progressBar);
-        mLogin = view.findViewById(R.id.btn_login);
+        mLogin = view.findViewById(R.id.btn_register);
         mForgotPassword = view.findViewById(R.id.tv_password_reset);
-        mRegister = view.findViewById(R.id.tv_register);
-        mBack = view.findViewById(R.id.back);
-        google = view.findViewById(R.id.google);
-        facebook = view.findViewById(R.id.facebook);
-        twitter = view.findViewById(R.id.twitter);
+        mRegister = view.findViewById(R.id.tv_login);
+        mBack = view.findViewById(R.id.btn_back);
 
         mNavController = Navigation.findNavController(view);
 
         mLogin.setOnClickListener(this);
         mRegister.setOnClickListener(this);
         mBack.setOnClickListener(this);
-        google.setOnClickListener(this);
-        facebook.setOnClickListener(this);
-        twitter.setOnClickListener(this);
         mForgotPassword.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_login:
+            case R.id.btn_register:
 //                navigateToBusinessActivity();
                 Log.d(TAG, "onClick: Thread = " + Thread.currentThread().getId());
                 signInUser();
                 break;
 
-            case R.id.tv_register:
+            case R.id.tv_login:
                 Log.d(TAG, "onClick: button register clicked");
                 mNavController.navigate(R.id.action_loginFragment_to_registerFragment);
 //                NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.startFragment, true).build();
@@ -124,18 +105,9 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
                 launchPasswordResetDialog();
                 break;
 
-            case R.id.back:
+            case R.id.btn_back:
                 Log.d(TAG, "onClick: back clicked");
-                mNavController.navigate(R.id.action_loginFragment_to_startFragment);
-                break;
-
-            case R.id.google:
-
-            case R.id.facebook:
-
-            case R.id.twitter:
-                Snackbar.make(v, "This feature isn't available yet. " +
-                        "Kindly check back later", Snackbar.LENGTH_LONG).show();
+                mNavController.navigate(R.id.action_loginFragment_to_onboardingFragment);
                 break;
         }
     }

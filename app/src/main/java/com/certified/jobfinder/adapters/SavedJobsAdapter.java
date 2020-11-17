@@ -3,7 +3,6 @@ package com.certified.jobfinder.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,20 +20,14 @@ import com.bumptech.glide.Glide;
 import com.certified.jobfinder.BusinessActivity;
 import com.certified.jobfinder.BusinessProfileActivity;
 import com.certified.jobfinder.R;
-import com.certified.jobfinder.model.Job;
 import com.certified.jobfinder.model.SavedJob;
 import com.certified.jobfinder.util.IntentExtra;
 import com.certified.jobfinder.util.PreferenceKeys;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
@@ -61,7 +54,7 @@ public class SavedJobsAdapter extends FirestoreRecyclerAdapter<SavedJob, SavedJo
         Log.d(TAG, "onBindViewHolder: called");
 
         Glide.with(mContext)
-                .load(R.drawable.google)
+                .load(R.drawable.logo)
                 .into(holder.ivBusinessProfileImage);
         holder.tvJobTitle.setText(model.getJob_title());
         holder.tvBusinessName.setText(model.getBusiness_name() + " --- " + model.getLocation());
@@ -125,8 +118,8 @@ public class SavedJobsAdapter extends FirestoreRecyclerAdapter<SavedJob, SavedJo
     @Override
     public SavedJobsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         mContext = parent.getContext();
-        View view = LayoutInflater.from(mContext).inflate(R.layout.jobs_list_new, parent, false);
-        Log.d(TAG, "onCreateViewHolder: Creaated");
+        View view = LayoutInflater.from(mContext).inflate(R.layout.saved_jobs_list, parent, false);
+        Log.d(TAG, "onCreateViewHolder: Created");
 
         return new SavedJobsViewHolder(view);
     }

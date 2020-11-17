@@ -18,10 +18,11 @@
             android:layout_marginTop="16dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@tools:sample/avatars" />
+            tools:srcCompat="@tools:sample/avatars"
+            android:layout_marginLeft="16dp" />
 
         <TextView
-            android:id="@+id/tv_name"
+            android:id="@+id/tv_display_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -31,7 +32,8 @@
             app:layout_constraintBottom_toTopOf="@+id/tv_email"
             app:layout_constraintStart_toEndOf="@+id/iv_profile_image"
             app:layout_constraintTop_toTopOf="@+id/iv_profile_image"
-            app:layout_constraintVertical_chainStyle="spread" />
+            app:layout_constraintVertical_chainStyle="spread"
+            android:layout_marginLeft="16dp" />
 
         <TextView
             android:id="@+id/tv_email"
@@ -39,8 +41,8 @@
             android:layout_height="wrap_content"
             android:text="@string/email"
             app:layout_constraintBottom_toBottomOf="@+id/iv_profile_image"
-            app:layout_constraintStart_toStartOf="@+id/tv_name"
-            app:layout_constraintTop_toBottomOf="@+id/tv_name" />
+            app:layout_constraintStart_toStartOf="@+id/tv_display_name"
+            app:layout_constraintTop_toBottomOf="@+id/tv_display_name" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout

@@ -3,19 +3,16 @@
 
     <item
         android:id="@+id/homeFragment"
-        android:icon="@drawable/ic_home"
         android:title="Home"
         android:visible="true" />
     <item
         android:id="@+id/jobsFragment"
-        android:icon="@drawable/ic_heart"
         android:title="My Offers" />
     <item
         android:id="@+id/alertsFragment"
-        android:icon="@drawable/ic_bell"
+        android:icon="@drawable/ic_notifications"
         android:title="Alerts" />
     <item
         android:id="@+id/profileFragment"
-        android:icon="@drawable/ic_profile"
         android:title="Profile" />
 </menu>

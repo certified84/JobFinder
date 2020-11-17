@@ -1,7 +1,6 @@
 package com.certified.jobfinder;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
@@ -35,7 +34,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         mLayout = findViewById(R.id.layout);
         ivProfileImage = findViewById(R.id.iv_profile_image);
-        tvName = findViewById(R.id.tv_name);
+        tvName = findViewById(R.id.tv_display_name);
         tvEmail = findViewById(R.id.tv_email);
 
 //        mLayout.setOnClickListener(new View.OnClickListener() {
@@ -46,7 +45,7 @@ public class SettingsActivity extends AppCompatActivity {
 //        });
 
         Glide.with(this)
-                .load(R.drawable.icon_one)
+                .load(R.drawable.logo)
                 .into(ivProfileImage);
         tvName.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
         tvEmail.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
