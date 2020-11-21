@@ -5,34 +5,32 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager2.widget.CompositePageTransformer;
-import androidx.viewpager2.widget.MarginPageTransformer;
-import androidx.viewpager2.widget.ViewPager2;
 
+import com.bumptech.glide.Glide;
 import com.certified.jobfinder.R;
 import com.certified.jobfinder.adapters.JobsRecyclerAdapter;
 import com.certified.jobfinder.adapters.SavedJobsAdapter;
-import com.certified.jobfinder.adapters.ViewPagerAdapter;
 import com.certified.jobfinder.model.Job;
 import com.certified.jobfinder.model.SavedJob;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
-public class HomeFragment extends Fragment{
+public class HomeFragment extends Fragment {
 
     private static final String TAG = "HomeFragment";
 
@@ -49,6 +47,7 @@ public class HomeFragment extends Fragment{
     private RecyclerView mJobsRecyclerView, mSavedJobsRecyclerView;
     private CardView jobDetail;
     private TextView tvDisplayName;
+    private ImageView ivProfileImage;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -68,6 +67,25 @@ public class HomeFragment extends Fragment{
         mSavedJobsRecyclerView = view.findViewById(R.id.recycler_view_saved_jobs);
         jobDetail = view.findViewById(R.id.job_card_view);
         tvDisplayName = view.findViewById(R.id.tv_display_name);
+        ivProfileImage = view.findViewById(R.id.iv_profile_image);
+
+        if (user.getPhotoUrl() != null) {
+            Glide.with(getContext())
+                    .load(user.getPhotoUrl())
+                    .into(ivProfileImage);
+        } else {
+            Glide.with(getContext())
+                    .load(R.drawable.logo)
+                    .into(ivProfileImage);
+        }
+
+        ivProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavController navController = Navigation.findNavController(getActivity(), R.id.individual_host_fragment);
+                navController.navigate(R.id.profileFragment);
+            }
+        });
 
         tvDisplayName.setText("Hello, " + user.getDisplayName());
 

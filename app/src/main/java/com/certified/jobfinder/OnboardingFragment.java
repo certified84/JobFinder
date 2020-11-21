@@ -3,6 +3,7 @@ package com.certified.jobfinder;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +18,10 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.certified.jobfinder.adapters.ViewPagerAdapter;
+import com.certified.jobfinder.model.SliderItem;
 import com.certified.jobfinder.util.PreferenceKeys;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -25,6 +29,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import me.relex.circleindicator.CircleIndicator3;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -36,6 +45,12 @@ public class OnboardingFragment extends Fragment{
     //    firebase
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private FirebaseAuth mAuth;
+
+
+    private ViewPagerAdapter mViewPagerAdapter;
+    private CircleIndicator3 mIndicator;
+    private List<SliderItem> mSliderItems;
+    private ViewPager2 mViewPager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,11 +74,21 @@ public class OnboardingFragment extends Fragment{
         super.onViewCreated(view, savedInstanceState);
 
         mNavController = Navigation.findNavController(view);
+        mViewPager = view.findViewById(R.id.view_pager2);
+        mIndicator = view.findViewById(R.id.indicator);
 
         Button btnGetStarted = view.findViewById(R.id.btn_get_started);
         btnGetStarted.setOnClickListener(view1 -> {
             mNavController.navigate(R.id.action_onboardingFragment_to_loginFragment);
         });
+
+        mSliderItems = new ArrayList<>();
+        mSliderItems.add(new SliderItem(R.raw.animation_job_alert, "Get notified with jobs",
+                "With every job that matches your\nprofile, you will get notified"));
+
+        mViewPagerAdapter = new ViewPagerAdapter(mSliderItems, mViewPager);
+        mViewPager.setAdapter(mViewPagerAdapter);
+        mIndicator.setViewPager(mViewPager);
     }
 
     @Override

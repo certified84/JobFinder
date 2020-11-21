@@ -28,6 +28,8 @@ import com.certified.jobfinder.model.User;
 import com.certified.jobfinder.util.PreferenceKeys;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,12 +43,13 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     private NavController mNavController;
 
     //    widgets
-    private EditText mEmail, mPassword, mConfirmPassword, mName, mPhoneNo;
+    private TextInputEditText mEmail, mPassword, mConfirmPassword, mName, mPhoneNo;
     private TextView mLogin;
     private Button mRegister;
     private ProgressBar mProgressBar;
     private ImageView mBack;
     private Spinner mSpinner;
+    private TextInputLayout etNameLayout;
 
     public RegisterFragment() {
         // Required empty public constructor
@@ -75,6 +78,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
         mLogin = view.findViewById(R.id.tv_login);
         mBack = view.findViewById(R.id.btn_back);
         mSpinner = view.findViewById(R.id.spinner);
+        etNameLayout = view.findViewById(R.id.et_name_layout);
 
         mBack.setOnClickListener(this);
         mRegister.setOnClickListener(this);
@@ -93,11 +97,11 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (mSpinner.getSelectedItem().toString().equals(getString(R.string.business))) {
-                    mName.setHint(getString(R.string.business_name));
+                    etNameLayout.setHint(getString(R.string.business_name));
                 } else if (mSpinner.getSelectedItem().toString().equals(getString(R.string.individual))) {
-                    mName.setHint(getString(R.string.name));
+                    etNameLayout.setHint(getString(R.string.name));
                 } else {
-                    mName.setHint("Name");
+                    etNameLayout.setHint("Name");
                 }
             }
 

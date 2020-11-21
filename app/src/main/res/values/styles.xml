@@ -40,4 +40,11 @@
         <item name="checkedIconTint">@color/white</item>
     </style>
 
+    <style name="CustomChipStyleOther" parent="Widget.MaterialComponents.Chip.Filter">
+        <item name="chipBackgroundColor">@color/chip_background_color_other</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="checkedIconEnabled">false</item>
+        <item name="chipIconEnabled">false</item>
+    </style>
+
 </resources>

@@ -7,9 +7,9 @@
         android:allowBackup="true"
         android:icon="@drawable/logo"
         android:label="@string/app_name"
+        android:resizeableActivity="false"
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
-        android:resizeableActivity="false"
         android:theme="@style/Theme.JobFinder"
         tools:targetApi="n">
         <activity
@@ -18,9 +18,13 @@
             android:parentActivityName=".IndividualActivity" />
         <activity
             android:name=".BusinessProfileActivity"
+            android:resizeableActivity="false"
             android:screenOrientation="portrait"
-            android:theme="@style/NoActionBar" />
-        <activity android:name=".JobDetailActivity" />
+            android:theme="@style/NoActionBarMaterial" />
+        <activity android:name=".JobDetailActivity"
+            android:resizeableActivity="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBarMaterial" />
         <activity
             android:name=".SplashActivity"
             android:screenOrientation="portrait"

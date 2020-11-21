@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.certified.jobfinder.BusinessActivity;
 import com.certified.jobfinder.BusinessProfileActivity;
+import com.certified.jobfinder.JobDetailActivity;
 import com.certified.jobfinder.R;
 import com.certified.jobfinder.model.SavedJob;
 import com.certified.jobfinder.util.IntentExtra;
@@ -38,7 +39,7 @@ import java.util.Set;
 public class SavedJobsAdapter extends FirestoreRecyclerAdapter<SavedJob, SavedJobsAdapter.SavedJobsViewHolder> {
 
     private static final String TAG = "SavedJobsAdapter";
-    public static Context mContext;
+    public Context mContext;
 
     //    Firebase
     private FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -57,8 +58,9 @@ public class SavedJobsAdapter extends FirestoreRecyclerAdapter<SavedJob, SavedJo
                 .load(R.drawable.logo)
                 .into(holder.ivBusinessProfileImage);
         holder.tvJobTitle.setText(model.getJob_title());
-        holder.tvBusinessName.setText(model.getBusiness_name() + " --- " + model.getLocation());
-        holder.tvDescription.setText("Description: " + model.getDescription());
+        holder.tvBusinessName.setText(model.getBusiness_name());
+        holder.tvLocation.setText(model.getLocation());
+        holder.tvSalary.setText(model.getSalary());
         holder.likeButton.setLiked(true);
         holder.likeButton.setOnLikeListener(new OnLikeListener() {
             @Override
@@ -95,8 +97,15 @@ public class SavedJobsAdapter extends FirestoreRecyclerAdapter<SavedJob, SavedJo
         });
 
         holder.jobDetails.setOnClickListener(view -> {
-            Intent intent = new Intent(mContext, BusinessActivity.class);
+            Intent intent = new Intent(mContext, JobDetailActivity.class);
+            intent.putExtra(IntentExtra.BUSINESS_PROFILE_IMAGE, model.getBusiness_profile_image_url());
+            intent.putExtra(IntentExtra.BUSINESS_NAME, model.getBusiness_name());
+            intent.putExtra(IntentExtra.JOB_LOCATION, model.getLocation());
+            intent.putExtra(IntentExtra.JOB_TITLE, model.getJob_title());
+            intent.putExtra(IntentExtra.JOB_DESCRIPTION, model.getDescription());
+            intent.putExtra(String.valueOf(IntentExtra.JOB_IS_SAVED), true);
             mContext.startActivity(intent);
+            Log.d(TAG, "onBindViewHolder: Opening Job details");
         });
 
         holder.ivBusinessProfileImage.setOnClickListener(view -> {
@@ -127,7 +136,7 @@ public class SavedJobsAdapter extends FirestoreRecyclerAdapter<SavedJob, SavedJo
     public static class SavedJobsViewHolder extends RecyclerView.ViewHolder {
         private CardView jobDetails;
         private ImageView ivBusinessProfileImage;
-        private TextView tvJobTitle, tvBusinessName, tvDescription;
+        private TextView tvJobTitle, tvBusinessName, tvSalary, tvLocation;
         public LikeButton likeButton;
 
         public SavedJobsViewHolder(@NonNull View itemView) {
@@ -136,7 +145,8 @@ public class SavedJobsAdapter extends FirestoreRecyclerAdapter<SavedJob, SavedJo
             ivBusinessProfileImage = itemView.findViewById(R.id.business_profile_image);
             tvBusinessName = itemView.findViewById(R.id.tv_business_name_location);
             tvJobTitle = itemView.findViewById(R.id.tv_job_title);
-            tvDescription = itemView.findViewById(R.id.tv_description);
+            tvSalary = itemView.findViewById(R.id.tv_salary);
+            tvLocation = itemView.findViewById(R.id.tv_location);
             likeButton = itemView.findViewById(R.id.likeButton);
         }
     }

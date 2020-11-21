@@ -23,6 +23,7 @@ import androidx.navigation.Navigation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -39,7 +40,7 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
 
     //    widgets
     public TextView mForgotPassword, mResendEmail, mRegister;
-    public EditText mEmail, mPassword;
+    public TextInputEditText mEmail, mPassword;
     public ProgressBar mProgressBar;
     public Button mLogin;
     public ImageView mBack;

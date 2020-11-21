@@ -9,12 +9,12 @@
         android:visible="false" />
     <item
         android:id="@+id/jobsFragment"
-        android:icon="@drawable/ic_mail"
+        android:icon="@drawable/like"
         android:title="My Jobs"
         android:visible="false" />
     <item
         android:id="@+id/alertsFragment"
-        android:icon="@drawable/ic_notifications"
+        android:icon="@drawable/bell"
         android:title="Alerts"
         android:visible="false" />
     <item
