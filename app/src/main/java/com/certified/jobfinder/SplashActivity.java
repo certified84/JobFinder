@@ -68,33 +68,7 @@ public class SplashActivity extends AppCompatActivity {
 //            checkConnectivity();
 //                navigateToBusinessActivity();
             checkAuthenticationState();
-//            startActivity(new Intent(this, ModernActivity.class));
-//            finish();
         }, 3000);
-    }
-
-    private void checkConnectivity() {
-        ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-        boolean isConnected = networkInfo != null && networkInfo.isConnected();
-        if (isConnected) {
-            Log.d(TAG, "checkConnectivity: Connected");
-            checkAuthenticationState();
-        } else {
-            Log.d(TAG, "checkConnectivity: No connection");
-            setContentView(R.layout.layout_no_connection);
-            mProgressBar = findViewById(R.id.progressBar);
-            btnRetry = findViewById(R.id.btn_retry);
-            btnRetry.setOnClickListener(view -> {
-                mProgressBar.setVisibility(View.VISIBLE);
-                handler = new Handler();
-                handler.postDelayed(() -> {
-                    Log.d(TAG, "run: Thread = " + Thread.currentThread().getId());
-                    mProgressBar.setVisibility(View.GONE);
-                    checkConnectivity();
-                }, 3000);
-            });
-        }
     }
 
     private void checkAuthenticationState() {

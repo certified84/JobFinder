@@ -1,1 +1,75 @@
-package com.certified.jobfinder.adapters;import android.content.Context;import android.net.Uri;import android.util.Log;import android.view.LayoutInflater;import android.view.View;import android.view.ViewGroup;import android.widget.ImageView;import android.widget.TextView;import androidx.annotation.NonNull;import androidx.cardview.widget.CardView;import androidx.recyclerview.widget.RecyclerView;import com.bumptech.glide.Glide;import com.certified.jobfinder.R;import com.like.LikeButton;public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.JobsViewHolder> {    private static final String TAG = "ViewPagerAdapter";    public Context mContext;    @NonNull    @Override    public JobsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {        mContext = parent.getContext();        View view = LayoutInflater.from(mContext).inflate(R.layout.jobs_list_new, parent, false);        Log.d(TAG, "onCreateViewHolder: view created");        return new ViewPagerAdapter.JobsViewHolder(view);    }    @Override    public void onBindViewHolder(@NonNull JobsViewHolder holder, int position) {        Log.d(TAG, "onBindViewHolder: called");        Glide.with(mContext)                .load(R.drawable.logo_one)                .into(holder.ivBusinessProfileImage);        holder.tvJobTitle.setText("Flutter Developer");        holder.tvBusinessName.setText("Certified Group --- Mountain view, Califonia.");        holder.tvDescription.setText("Description: Just have sense my guy.");    }    @Override    public int getItemCount() {        return 5;    }    public class JobsViewHolder extends RecyclerView.ViewHolder {        private CardView jobDetails;        private ImageView ivBusinessProfileImage;        private TextView tvJobTitle, tvBusinessName, tvDescription;        public LikeButton likeButton;        public JobsViewHolder(@NonNull View itemView) {            super(itemView);            jobDetails = itemView.findViewById(R.id.job_card_view);            ivBusinessProfileImage = itemView.findViewById(R.id.business_profile_image);            tvBusinessName = itemView.findViewById(R.id.tv_business_name_location);            tvJobTitle = itemView.findViewById(R.id.tv_job_title);            tvDescription = itemView.findViewById(R.id.tv_description);            likeButton = itemView.findViewById(R.id.likeButton);        }    }}
+package com.certified.jobfinder.adapters;
+
+import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
+
+import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.RenderMode;
+import com.certified.jobfinder.R;
+import com.certified.jobfinder.model.SliderItem;
+
+import java.util.List;
+
+public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.ViewPagerViewHolder> {
+
+    private static final String TAG = "ViewPagerAdapter";
+
+    private Context mContext;
+    private LayoutInflater mLayoutInflater;
+
+    private List<SliderItem> mSliderItems;
+    private ViewPager2 mViewPager2;
+
+    public ViewPagerAdapter(List<SliderItem> sliderItems, ViewPager2 viewPager2) {
+        mSliderItems = sliderItems;
+        mViewPager2 = viewPager2;
+    }
+
+    @NonNull
+    @Override
+    public ViewPagerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        mContext = parent.getContext();
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item_view_pager, parent, false);
+        Log.d(TAG, "onCreateViewHolder: Created");
+
+        return new ViewPagerViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewPagerViewHolder holder, int position) {
+        holder.setItems(mSliderItems.get(position));
+    }
+
+    @Override
+    public int getItemCount() {
+        return mSliderItems.size();
+    }
+
+    public static class ViewPagerViewHolder extends RecyclerView.ViewHolder {
+        private LottieAnimationView animationView;
+        private TextView tvTitle, tvDescription;
+
+        public ViewPagerViewHolder(@NonNull View itemView) {
+            super(itemView);
+            animationView = itemView.findViewById(R.id.animation_view);
+            tvTitle = itemView.findViewById(R.id.tv_title);
+            tvDescription = itemView.findViewById(R.id.tv_description);
+        }
+
+        public void setItems(SliderItem sliderItem) {
+            animationView.setRenderMode(RenderMode.SOFTWARE);
+            animationView.setAnimation(sliderItem.getAnimation());
+            tvTitle.setText(sliderItem.getTitle());
+            tvDescription.setText(sliderItem.getDescription());
+        }
+    }
+}

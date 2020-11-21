@@ -52,42 +52,28 @@ import static android.text.TextUtils.isEmpty;
 import static com.certified.jobfinder.util.PreferenceKeys.EMAIL;
 import static com.certified.jobfinder.util.PreferenceKeys.NAME;
 
-public class BusinessActivity extends AppCompatActivity implements
-        BottomNavigationView.OnNavigationItemSelectedListener, NavigationView.OnNavigationItemSelectedListener {
+public class BusinessActivity extends AppCompatActivity {
 
     private static final String TAG = "BusinessActivity";
     public BottomNavigationView mBottomNavigationView;
     private NavController mNavController;
-    private DrawerLayout mDrawer;
     private Toolbar mToolbar;
-    private NavigationView mNavigationView;
-    private TextView mNavUserName, mNavUserEmail;
-    private ImageView mNavProfileImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_business);
+        setContentView(R.layout.content_business);
         mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        mDrawer = findViewById(R.id.drawer_layout);
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window w = getWindow();
-            w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+            w.setNavigationBarColor(getResources().getColor(R.color.primaryGreen));
         }
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
-        );
-        mDrawer.addDrawerListener(toggle);
-        toggle.syncState();
-
         mBottomNavigationView = findViewById(R.id.bottomNavigationView);
-        mNavigationView = findViewById(R.id.nav_view);
 
         isFirstLogin();
-        init();
     }
 
     public void isFirstLogin() {
@@ -111,70 +97,17 @@ public class BusinessActivity extends AppCompatActivity implements
                 dialogInterface.dismiss();
                 finish();
             });
-            alertDialogBuilder.setIcon(R.drawable.logo_one);
+            alertDialogBuilder.setIcon(R.drawable.logo);
             alertDialogBuilder.setTitle(" ");
             AlertDialog alertDialog = alertDialogBuilder.create();
             alertDialog.show();
         }
     }
 
-    public void init() {
-        mNavController = Navigation.findNavController(this, R.id.business_host_fragment);
-
-        NavigationUI.setupWithNavController(mBottomNavigationView, mNavController);
-        NavigationUI.setupWithNavController(mNavigationView, mNavController);
-
-        NavigationUI.setupActionBarWithNavController(this, mNavController);
-
-        mNavigationView.setNavigationItemSelectedListener(this);
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
 //        checkAuthenticationState();
-        updateNavHeader();
-    }
-
-    private void updateNavHeader() {
-        View headerView = mNavigationView.getHeaderView(0);
-        headerView.setBackgroundColor(getResources().getColor(R.color.primaryDarkGreen));
-        mNavUserEmail = headerView.findViewById(R.id.nav_user_email);
-        mNavUserName = headerView.findViewById(R.id.nav_user_name);
-        mNavProfileImage = headerView.findViewById(R.id.nav_profile_image);
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            String name = user.getDisplayName();
-            String email = user.getEmail();
-            Uri profileImageUrl = user.getPhotoUrl();
-
-            if (profileImageUrl != null) {
-                Glide.with(this)
-                        .load(profileImageUrl)
-                        .into(mNavProfileImage);
-            } else {
-                Glide.with(this)
-                        .load(R.drawable.icon_two)
-                        .into(mNavProfileImage);
-            }
-            mNavUserEmail.setText(email);
-            mNavUserName.setText(name);
-
-            mNavProfileImage.setOnClickListener(view -> {
-                Navigation.findNavController(BusinessActivity.this, R.id.business_host_fragment).navigate(R.id.profileFragment);
-                mDrawer.closeDrawer(GravityCompat.START);
-            });
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mDrawer.isOpen()) {
-            mDrawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
     }
 
     @Override
@@ -264,44 +197,5 @@ public class BusinessActivity extends AppCompatActivity implements
 //                throw new IllegalStateException("Unexpected value: " + item.getItemId());
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-        switch (item.getItemId()) {
-
-            case R.id.aboutFragment:
-                Navigation.findNavController(this, R.id.business_host_fragment).navigate(R.id.aboutFragment);
-                break;
-
-            case R.id.homeFragment:
-                Navigation.findNavController(this, R.id.business_host_fragment).navigate(R.id.homeFragment);
-                break;
-
-            case R.id.contactFragment:
-                Navigation.findNavController(this, R.id.business_host_fragment).navigate(R.id.contactFragment);
-                break;
-
-            case R.id.helpFragment:
-                Navigation.findNavController(this, R.id.business_host_fragment).navigate(R.id.helpFragment);
-                break;
-
-            case R.id.nav_sign_out:
-                FirebaseAuth.getInstance().signOut();
-                navigateToStartActivity();
-                break;
-
-            case R.id.settingsFragment:
-                return false;
-        }
-        mDrawer.closeDrawer(GravityCompat.START);
-        item.setChecked(true);
-        return true;
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        return NavigationUI.navigateUp(Navigation.findNavController(this, R.id.business_host_fragment), mDrawer);
     }
 }

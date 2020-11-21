@@ -3,314 +3,335 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#F8F8F8">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profile_image"
-            android:layout_width="160dp"
-            android:layout_height="160dp"
-            app:layout_constraintBottom_toTopOf="@+id/guideline17"
-            app:layout_constraintEnd_toStartOf="@+id/guideline19"
-            app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="@+id/guideline18"
-            app:layout_constraintTop_toTopOf="@+id/guideline24"
-            tools:src="@tools:sample/avatars" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline24"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.05" />
+            android:background="@drawable/background_profile">
 
-        <ImageView
-            android:id="@+id/imageView8"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_marginStart="32dp"
-            app:srcCompat="@drawable/ic_person"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline25" />
 
-        <TextView
-            android:id="@+id/tv_name"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginEnd="16dp"
-            android:ems="10"
-            android:gravity="center_vertical"
-            android:text="@string/name"
-            android:textColor="@color/font"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView8"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/tv_hint_name"
-            app:layout_constraintTop_toBottomOf="@+id/tv_hint_name" />
+            <TextView
+                android:id="@+id/tv_display_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="Samson Achiaga"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/iv_settings"
+                app:layout_constraintStart_toEndOf="@+id/iv_share"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tv_hint_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="@string/name"
-            android:textColor="@color/black"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toTopOf="@+id/imageView8"
-            app:layout_constraintStart_toEndOf="@+id/imageView8"
-            app:layout_constraintTop_toTopOf="@+id/imageView8" />
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/iv_share"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginLeft="32dp"
+                android:background="@android:color/transparent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tv_display_name"
+                app:srcCompat="@drawable/ic_share"
+                app:tint="#FFFFFF" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline25"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.35" />
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/iv_settings"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginRight="32dp"
+                android:background="@android:color/transparent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tv_display_name"
+                app:srcCompat="@drawable/ic_settings" />
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/email"
-            android:textColor="@color/black"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toTopOf="@+id/imageView9"
-            app:layout_constraintStart_toStartOf="@+id/tv_email"
-            app:layout_constraintTop_toTopOf="@+id/imageView9" />
+            <com.github.captain_miao.optroundcardview.OptRoundCardView
+                android:id="@+id/optRoundCardView"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                app:layout_constraintBottom_toTopOf="@+id/guideline6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/guideline6"
+                app:optRoundCardCornerRadius="50dp">
 
-        <ImageView
-            android:id="@+id/imageView9"
-            android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_marginTop="32dp"
-            app:srcCompat="@drawable/ic_mail"
-            app:layout_constraintEnd_toEndOf="@+id/imageView8"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/imageView8"
-            app:layout_constraintTop_toBottomOf="@+id/imageView8" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tv_email"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:ems="10"
-            android:gravity="center_vertical"
-            android:text="@string/email"
-            android:textColor="@color/font"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView9"
-            app:layout_constraintEnd_toEndOf="@+id/tv_name"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/tv_name"
-            app:layout_constraintTop_toBottomOf="@+id/textView"
-            app:layout_constraintVertical_bias="0.0" />
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/iv_profile_image"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:srcCompat="@tools:sample/avatars" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.github.captain_miao.optroundcardview.OptRoundCardView>
 
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/group_name"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:clickable="true"
-            android:focusable="true"
-            app:constraint_referenced_ids="imageView8,tv_hint_name,tv_name"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_name"
-            app:layout_constraintEnd_toEndOf="@+id/tv_name"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/imageView8"
-            app:layout_constraintTop_toTopOf="@+id/tv_hint_name"
-            app:layout_constraintVertical_bias="0.0" />
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_begin="153dp" />
 
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/group_user_email"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:clickable="true"
-            android:focusable="true"
-            app:constraint_referenced_ids="textView,imageView9,tv_email"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_email"
-            app:layout_constraintEnd_toEndOf="@+id/tv_email"
-            app:layout_constraintStart_toStartOf="@+id/imageView9"
-            app:layout_constraintTop_toTopOf="@+id/textView" />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:paddingLeft="16dp"
+                android:paddingTop="0dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="8dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="8dp"
+                app:cardUseCompatPadding="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/optRoundCardView">
 
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/group_user_phone"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:constraint_referenced_ids="tv_phone,imageView10,textView11"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_phone"
-            app:layout_constraintEnd_toEndOf="@+id/tv_phone"
-            app:layout_constraintStart_toStartOf="@+id/imageView10"
-            app:layout_constraintTop_toTopOf="@+id/textView11" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/group_user_location"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:constraint_referenced_ids="imageView11,textView13,tv_location"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_location"
-            app:layout_constraintEnd_toEndOf="@+id/tv_location"
-            app:layout_constraintStart_toStartOf="@+id/imageView11"
-            app:layout_constraintTop_toTopOf="@+id/textView13" />
+                    <androidx.constraintlayout.widget.Group
+                        android:id="@+id/group_edit_profile"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:constraint_referenced_ids="imageView12,tv_profile"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView12"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/imageView12" />
 
-        <TextView
-            android:id="@+id/tv_phone"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:gravity="center_vertical"
-            android:text="@string/phone"
-            android:textColor="@color/font"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView10"
-            app:layout_constraintEnd_toEndOf="@+id/tv_email"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/tv_email"
-            app:layout_constraintTop_toBottomOf="@+id/textView11" />
+                    <TextView
+                        android:id="@+id/tv_profile"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:text="Edit Profile"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView12"
+                        app:layout_constraintStart_toEndOf="@+id/imageView12"
+                        app:layout_constraintTop_toTopOf="@+id/imageView12" />
 
-        <ImageView
-            android:id="@+id/imageView10"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_marginTop="32dp"
-            app:srcCompat="@drawable/ic_phone"
-            app:layout_constraintStart_toStartOf="@+id/imageView9"
-            app:layout_constraintTop_toBottomOf="@+id/imageView9" />
+                    <ImageView
+                        android:id="@+id/imageView12"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_person" />
 
-        <TextView
-            android:id="@+id/textView11"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/phone"
-            app:layout_constraintBottom_toTopOf="@+id/imageView10"
-            app:layout_constraintStart_toStartOf="@+id/tv_phone"
-            app:layout_constraintTop_toTopOf="@+id/imageView10" />
+                    <androidx.constraintlayout.widget.Group
+                        android:id="@+id/group_my_location"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:constraint_referenced_ids="imageView13,textView11"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView13"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/imageView13" />
 
-        <ImageView
-            android:id="@+id/imageView11"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_marginTop="32dp"
-            app:srcCompat="@drawable/ic_location"
-            app:layout_constraintEnd_toEndOf="@+id/imageView10"
-            app:layout_constraintStart_toStartOf="@+id/imageView10"
-            app:layout_constraintTop_toBottomOf="@+id/imageView10" />
+                    <TextView
+                        android:id="@+id/textView11"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="My Location"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView13"
+                        app:layout_constraintStart_toStartOf="@+id/tv_profile"
+                        app:layout_constraintTop_toTopOf="@+id/imageView13" />
 
-        <TextView
-            android:id="@+id/textView13"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/location"
-            app:layout_constraintBottom_toTopOf="@+id/imageView11"
-            app:layout_constraintStart_toStartOf="@+id/tv_location"
-            app:layout_constraintTop_toTopOf="@+id/imageView11" />
+                    <ImageView
+                        android:id="@+id/imageView13"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintStart_toStartOf="@+id/imageView12"
+                        app:layout_constraintTop_toBottomOf="@+id/imageView12"
+                        app:srcCompat="@drawable/ic_location" />
 
-        <TextView
-            android:id="@+id/tv_location"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:gravity="center_vertical"
-            android:text="@string/location"
-            android:textColor="@color/font"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView11"
-            app:layout_constraintEnd_toEndOf="@+id/tv_phone"
-            app:layout_constraintStart_toStartOf="@+id/tv_phone"
-            app:layout_constraintTop_toBottomOf="@+id/textView13" />
+                    <androidx.constraintlayout.widget.Group
+                        android:id="@+id/group_upload_cv"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:constraint_referenced_ids="tv_upload_cv,imageView14"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView14"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/imageView14" />
 
-        <ImageView
-            android:id="@+id/imageView12"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/line_seperator"
-            app:layout_constraintBottom_toTopOf="@+id/group_user_email"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/tv_name"
-            app:layout_constraintTop_toBottomOf="@+id/group_name"
-            app:tint="@color/lightBlack"/>
+                    <TextView
+                        android:id="@+id/tv_upload_cv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Upload CV"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView14"
+                        app:layout_constraintStart_toStartOf="@+id/textView11"
+                        app:layout_constraintTop_toTopOf="@+id/imageView14" />
 
-        <ImageView
-            android:id="@+id/imageView13"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/line_seperator"
-            app:layout_constraintBottom_toTopOf="@+id/group_user_phone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/tv_email"
-            app:layout_constraintTop_toBottomOf="@+id/group_user_email"
-            app:tint="@color/lightBlack" />
+                    <ImageView
+                        android:id="@+id/imageView14"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/imageView13"
+                        app:layout_constraintTop_toBottomOf="@+id/imageView13"
+                        app:srcCompat="@drawable/upload"
+                        app:tint="@color/primaryGreen" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
 
-        <ImageView
-            android:id="@+id/imageView14"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:src="@drawable/line_seperator"
-            app:tint="@color/lightBlack"
-            app:layout_constraintBottom_toTopOf="@+id/group_user_location"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/tv_phone"
-            app:layout_constraintTop_toBottomOf="@+id/group_user_phone" />
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="16dp"
+                android:paddingLeft="16dp"
+                android:paddingTop="0dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="8dp"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="8dp"
+                app:cardUseCompatPadding="false"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView2">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline17"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.25" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline18"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.3" />
+                    <androidx.constraintlayout.widget.Group
+                        android:id="@+id/group_help_center"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:constraint_referenced_ids="tv_help,imageView9"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView9"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/imageView9" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline19"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.7" />
+                    <TextView
+                        android:id="@+id/tv_help"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:text="Help Center"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView9"
+                        app:layout_constraintStart_toEndOf="@+id/imageView9"
+                        app:layout_constraintTop_toTopOf="@+id/imageView9" />
 
-        <Button
-            android:id="@+id/btn_upload_resume"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="32dp"
-            android:background="@drawable/btn_upload"
-            android:text="upload resume"
-            android:textColor="@color/white"
-            app:layout_constraintEnd_toEndOf="@+id/tv_location"
-            app:layout_constraintStart_toStartOf="@+id/imageView11"
-            app:layout_constraintTop_toBottomOf="@+id/group_user_location" />
+                    <ImageView
+                        android:id="@+id/imageView9"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_baseline_help" />
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                    <View
+                        android:id="@+id/divider"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="16dp"
+                        android:background="?android:attr/listDivider"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/imageView10" />
 
-        <ImageView
-            android:id="@+id/profile_image_change"
-            android:layout_width="64dp"
-            android:layout_height="56dp"
-            app:layout_constraintBottom_toBottomOf="@+id/profile_image"
-            app:layout_constraintEnd_toEndOf="@+id/profile_image"
-            app:layout_constraintStart_toStartOf="@+id/profile_image"
-            app:layout_constraintTop_toBottomOf="@+id/profile_image"
-            app:srcCompat="@drawable/ic_camera"
-            tools:ignore="VectorDrawableCompat"
-            app:tint="@color/font" />
+                    <androidx.constraintlayout.widget.Group
+                        android:id="@+id/group_about_us"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:constraint_referenced_ids="tv_about,imageView10"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView10"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/imageView10" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                    <TextView
+                        android:id="@+id/tv_about"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="About Us"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView10"
+                        app:layout_constraintStart_toStartOf="@+id/tv_help"
+                        app:layout_constraintTop_toTopOf="@+id/imageView10" />
+
+                    <ImageView
+                        android:id="@+id/imageView10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        app:layout_constraintStart_toStartOf="@+id/imageView9"
+                        app:layout_constraintTop_toBottomOf="@+id/imageView9"
+                        app:srcCompat="@drawable/ic_nfo" />
+
+                    <androidx.constraintlayout.widget.Group
+                        android:id="@+id/group_log_out"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        app:constraint_referenced_ids="tv_log_out,imageView11"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView11"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/imageView11" />
+
+                    <TextView
+                        android:id="@+id/tv_log_out"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Log out"
+                        app:layout_constraintBottom_toBottomOf="@+id/imageView11"
+                        app:layout_constraintStart_toStartOf="@+id/tv_about"
+                        app:layout_constraintTop_toTopOf="@+id/imageView11" />
+
+                    <ImageView
+                        android:id="@+id/imageView11"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginBottom="16dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/imageView10"
+                        app:layout_constraintTop_toBottomOf="@+id/divider"
+                        app:srcCompat="@drawable/logout"
+                        app:tint="#777777" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

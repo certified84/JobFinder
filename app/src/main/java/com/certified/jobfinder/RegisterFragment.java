@@ -27,27 +27,15 @@ import androidx.preference.PreferenceManager;
 import com.certified.jobfinder.model.User;
 import com.certified.jobfinder.util.PreferenceKeys;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.AuthResult;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import static android.text.TextUtils.isEmpty;
 
 public class RegisterFragment extends Fragment implements View.OnClickListener {
 
@@ -55,12 +43,13 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     private NavController mNavController;
 
     //    widgets
-    private EditText mEmail, mPassword, mConfirmPassword, mName, mPhoneNo;
+    private TextInputEditText mEmail, mPassword, mConfirmPassword, mName, mPhoneNo;
     private TextView mLogin;
     private Button mRegister;
     private ProgressBar mProgressBar;
-    private ImageView mBack, facebook, google, twitter;
+    private ImageView mBack;
     private Spinner mSpinner;
+    private TextInputLayout etNameLayout;
 
     public RegisterFragment() {
         // Required empty public constructor
@@ -87,26 +76,15 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
         mProgressBar = view.findViewById(R.id.progressBar);
         mRegister = view.findViewById(R.id.btn_register);
         mLogin = view.findViewById(R.id.tv_login);
-        mBack = view.findViewById(R.id.back);
-        facebook = view.findViewById(R.id.facebook);
-        google = view.findViewById(R.id.google);
-        twitter = view.findViewById(R.id.twitter);
+        mBack = view.findViewById(R.id.btn_back);
         mSpinner = view.findViewById(R.id.spinner);
+        etNameLayout = view.findViewById(R.id.et_name_layout);
 
         mBack.setOnClickListener(this);
         mRegister.setOnClickListener(this);
         mLogin.setOnClickListener(this);
-        facebook.setOnClickListener(this);
-        google.setOnClickListener(this);
-        twitter.setOnClickListener(this);
 
         mNavController = Navigation.findNavController(view);
-
-//        ArrayAdapter<String> level = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
-//        level.add("Business");
-//        level.add("Individual");
-//        level.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        mSpinner.setAdapter(level);
 
         ArrayAdapter<String> level = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
         level.add("Choose account type");
@@ -119,11 +97,11 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (mSpinner.getSelectedItem().toString().equals(getString(R.string.business))) {
-                    mName.setHint(getString(R.string.business_name));
+                    etNameLayout.setHint(getString(R.string.business_name));
                 } else if (mSpinner.getSelectedItem().toString().equals(getString(R.string.individual))) {
-                    mName.setHint(getString(R.string.name));
+                    etNameLayout.setHint(getString(R.string.name));
                 } else {
-                    mName.setHint("Name");
+                    etNameLayout.setHint("Name");
                 }
             }
 
@@ -146,27 +124,10 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
                 mNavController.navigate(R.id.action_registerFragment_to_loginFragment);
                 break;
 
-            case R.id.back:
+            case R.id.btn_back:
                 Log.d(TAG, "onClick: back clicked");
-                mNavController.navigate(R.id.action_registerFragment_to_startFragment);
+                mNavController.navigate(R.id.action_registerFragment_to_onboardingFragment);
 //                NavOptions navOptions = new NavOptions().Builder().setPopUpTo(R.id.startFragment, true).build();
-                break;
-
-            case R.id.google:
-
-            case R.id.facebook:
-
-            case R.id.twitter:
-
-            case R.id.btn_facebook:
-
-            case R.id.btn_google:
-
-            case R.id.btn_twitter:
-//                Toast.makeText(this, "This feature is not available yet. " +
-//                        "Kindly check back later", Toast.LENGTH_LONG).show();
-                Snackbar.make(v, "This feature isn't available yet. " +
-                        "Kindly check back later", Snackbar.LENGTH_LONG).show();
                 break;
         }
     }

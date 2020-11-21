@@ -6,7 +6,7 @@
     <string name="tag_fragment_register">Register Fragment</string>
     <string name="hint_password">Password</string>
     <string name="hint_email">Email</string>
-    <string name="login">LOGIN</string>
+    <string name="login">Log In</string>
     <string name="hint_name">Name</string>
     <string name="register">REGISTER</string>
     <string name="already_have_an_account">Already have an account?</string>
@@ -28,8 +28,8 @@
     <string name="menu_slideshow">Slideshow</string>
     <string name="tag_choose_fragment">Choose Fragment</string>
     <string name="experience">Experience a personalized job seeking experience journey towards your dream job</string>
-    <string name="sign_up_now">Sign up now</string>
-    <string name="forgot_password">forgot password?</string>
+    <string name="sign_up">Sign up</string>
+    <string name="forgot_password">Forgot password?</string>
     <string name="don_t_have_an_account">Don\'t have an account?</string>
     <string name="business">Business</string>
     <string name="individual">Individual</string>

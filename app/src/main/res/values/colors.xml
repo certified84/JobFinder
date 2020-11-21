@@ -8,9 +8,11 @@
     <color name="primaryDarkGreen">#109D38</color>
     <color name="goldGreen">#74D811</color>
     <color name="accentGreen">#0ED145</color>
-    <color name="inputField">#574848</color>
+    <color name="inputField">#777777</color>
     <color name="font">#707070</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="lightBlack">#212121</color>
+    <color name="teal_200">#777777</color>
+    <color name="teal_700">#212121</color>
 </resources>

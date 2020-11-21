@@ -9,23 +9,17 @@
         android:visible="false" />
     <item
         android:id="@+id/jobsFragment"
-        android:icon="@drawable/ic_heart"
+        android:icon="@drawable/like"
         android:title="My Jobs"
         android:visible="false" />
     <item
         android:id="@+id/alertsFragment"
-        android:icon="@drawable/ic_bell"
+        android:icon="@drawable/bell"
         android:title="Alerts"
         android:visible="false" />
     <item
-        android:id="@+id/messageFragment"
-        android:icon="@drawable/ic_mail"
-        android:title="Messages"
+        android:id="@+id/profileFragment"
+        android:icon="@drawable/ic_person"
+        android:title="Profile"
         android:visible="false" />
-    <item
-        android:id="@+id/app_bar_search"
-        android:icon="@drawable/ic_search_black_24dp"
-        android:title="Search"
-        app:actionViewClass="android.widget.SearchView"
-        app:showAsAction="always" />
 </menu>

@@ -57,7 +57,7 @@ public class JobSeekersAdapter extends RecyclerView.Adapter<JobSeekersAdapter.Jo
 //        Uri businessProfileUrl = jobs.getProfileImageUrl();
 
         Glide.with(mContext)
-                .load(R.drawable.facebook)
+                .load(R.drawable.logo)
                 .into(holder.ivJobSeekerProfileImage);
         holder.tvName.setText("Samson Achiaga");
         holder.tvRole.setText("Android Developer");

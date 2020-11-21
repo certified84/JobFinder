@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/job_details_nav_graph"
+    app:startDestination="@id/jobDescriptionFragment">
+
+    <fragment
+        android:id="@+id/jobDescriptionFragment"
+        android:name="com.certified.jobfinder.JobDescriptionFragment"
+        android:label="fragment_job_description"
+        tools:layout="@layout/fragment_job_description" />
+    <fragment
+        android:id="@+id/businessDescriptionFragment"
+        android:name="com.certified.jobfinder.BusinessDescriptionFragment"
+        android:label="fragment_business_description"
+        tools:layout="@layout/fragment_business_description" />
+    <fragment
+        android:id="@+id/businessReviewFragment"
+        android:name="com.certified.jobfinder.BusinessReviewFragment"
+        android:label="fragment_business_review"
+        tools:layout="@layout/fragment_business_review" />
+</navigation>
