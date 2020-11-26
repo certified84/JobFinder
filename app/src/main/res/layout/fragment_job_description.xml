@@ -55,7 +55,7 @@
                         android:id="@+id/tv_qualifications"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="TextView" />
+                        tools:text="TextView" />
                 </ScrollView>
             </LinearLayout>
         </com.github.captain_miao.optroundcardview.OptRoundCardView>
@@ -97,7 +97,7 @@
                         android:id="@+id/tv_about_job"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="TextView" />
+                        tools:text="TextView" />
                 </ScrollView>
             </LinearLayout>
         </com.github.captain_miao.optroundcardview.OptRoundCardView>

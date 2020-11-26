@@ -1,5 +1,12 @@
 package com.certified.jobfinder.individual_bottom_nav_menu_fragments;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,13 +18,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.bumptech.glide.Glide;
+import com.certified.jobfinder.BusinessActivity;
+import com.certified.jobfinder.MyWorker;
 import com.certified.jobfinder.R;
 import com.certified.jobfinder.adapters.JobsRecyclerAdapter;
 import com.certified.jobfinder.adapters.SavedJobsAdapter;
@@ -29,6 +41,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class HomeFragment extends Fragment {
 
@@ -48,6 +62,10 @@ public class HomeFragment extends Fragment {
     private CardView jobDetail;
     private TextView tvDisplayName;
     private ImageView ivProfileImage;
+
+    private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
+    private NotificationManager mNotifyManager;
+    private static final int BUDGET_NOTIFICATION_ID = 0;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -69,6 +87,8 @@ public class HomeFragment extends Fragment {
         tvDisplayName = view.findViewById(R.id.tv_display_name);
         ivProfileImage = view.findViewById(R.id.iv_profile_image);
 
+        OneTimeWorkRequest request = new OneTimeWorkRequest.Builder(MyWorker.class).build();
+
         if (user.getPhotoUrl() != null) {
             Glide.with(getContext())
                     .load(user.getPhotoUrl())
@@ -79,18 +99,32 @@ public class HomeFragment extends Fragment {
                     .into(ivProfileImage);
         }
 
-        ivProfileImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                NavController navController = Navigation.findNavController(getActivity(), R.id.individual_host_fragment);
-                navController.navigate(R.id.profileFragment);
-            }
+        ivProfileImage.setOnClickListener(view1 -> {
+            WorkManager.getInstance(getContext()).enqueue(request);
+            NavController navController = Navigation.findNavController(getActivity(), R.id.individual_host_fragment);
+            navController.navigate(R.id.profileFragment);
         });
 
         tvDisplayName.setText("Hello, " + user.getDisplayName());
 
         setUpJobsRecyclerView();
         setUpSavedJobsRecyclerView();
+    }
+
+    public void displayNotification() {
+        Intent intent = new Intent(getContext(), BusinessActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), BUDGET_NOTIFICATION_ID,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        String message = "A new job matches your profile";
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), PRIMARY_CHANNEL_ID);
+        builder.setDefaults(Notification.DEFAULT_ALL).setSmallIcon(R.drawable.ic_notifications).setContentTitle("New job alert")
+                .setColor(getResources().getColor(R.color.primaryGreen))
+                .setContentText(message).setTicker("Budget").setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_HIGH).setContentIntent(pendingIntent);
+        NotificationManager manager = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+        manager.notify(BUDGET_NOTIFICATION_ID, builder.build());
     }
 
     private void setUpJobsRecyclerView() {
@@ -138,4 +172,5 @@ public class HomeFragment extends Fragment {
         mJobsRecyclerAdapter.stopListening();
         mSavedJobsAdapter.stopListening();
     }
+
 }

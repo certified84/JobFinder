@@ -21,7 +21,8 @@
             android:text="@string/enter_phone_no"
             app:layout_constraintBottom_toTopOf="@+id/et_change_phone"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginLeft="32dp" />
 
         <EditText
             android:id="@+id/et_change_phone"
@@ -36,7 +37,8 @@
             app:layout_constraintBottom_toTopOf="@+id/tv_save_phone_no"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/textView15" />
+            app:layout_constraintStart_toStartOf="@+id/textView15"
+            android:layout_marginRight="32dp" />
 
         <TextView
             android:id="@+id/tv_save_phone_no"
@@ -56,7 +58,8 @@
             android:text="@string/cancel"
             android:textColor="@color/accentGreen"
             app:layout_constraintEnd_toStartOf="@+id/tv_save_phone_no"
-            app:layout_constraintTop_toTopOf="@+id/tv_save_phone_no" />
+            app:layout_constraintTop_toTopOf="@+id/tv_save_phone_no"
+            android:layout_marginRight="32dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

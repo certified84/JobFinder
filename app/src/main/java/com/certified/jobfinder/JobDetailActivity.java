@@ -67,6 +67,7 @@ public class JobDetailActivity extends AppCompatActivity implements View.OnClick
     @Override
     protected void onResume() {
         super.onResume();
+
         chipJobDescription.setChecked(true);
         init();
         loadJobDetails();
@@ -76,6 +77,9 @@ public class JobDetailActivity extends AppCompatActivity implements View.OnClick
         mNavController = Navigation.findNavController(this, R.id.description_host_fragment);
         if (chipJobDescription.isChecked()) {
             String jobDescription = intent.getStringExtra(IntentExtra.JOB_DESCRIPTION);
+//            if (jobDescription.length() < 50) {
+//                jobDescription = "No qualifications found";
+//            }
             Bundle bundle = new Bundle();
             bundle.putString(IntentExtra.JOB_DESCRIPTION, jobDescription);
             mNavController.navigate(R.id.jobDescriptionFragment, bundle, null);

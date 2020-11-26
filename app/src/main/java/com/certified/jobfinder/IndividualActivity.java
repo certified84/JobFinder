@@ -1,7 +1,10 @@
 package com.certified.jobfinder;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -32,14 +35,23 @@ public class IndividualActivity extends AppCompatActivity {
     private SmoothBottomBar mBottomNavigationView;
     private NavController mNavController;
     private NavOptions mNavOptions;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseUser mUser;
+
+    private StartActivityViewModel mViewModel;
+    private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.content_individual);
+
+        Log.d(TAG, "onCreate: owner onCreate");
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+//        mViewModel = new StartActivityViewModel(getApplication());
 //        enableStrictMode();
 
         mBottomNavigationView = findViewById(R.id.bottomNavigationView);
@@ -50,7 +62,9 @@ public class IndividualActivity extends AppCompatActivity {
 //            w.setNavigationBarColor(getResources().getColor(R.color.white));
         }
 
+        setupFirebaseAuth();
         isFirstLogin();
+        createNotificationChannel();
     }
 
     public void isFirstLogin() {
@@ -92,63 +106,60 @@ public class IndividualActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseAuth.getInstance().addAuthStateListener(mAuthStateListener);
+        Log.d(TAG, "owner onStart: AuthStateListener added");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mUser != null) {
+            FirebaseAuth.getInstance().removeAuthStateListener(mAuthStateListener);
+            Log.d(TAG, "onStart: AuthStateListener removed");
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-        checkAuthenticationState();
-    }
-
-    private void checkAuthenticationState() {
-        Log.d(TAG, "checkAuthenticationState: checking authentication state");
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            Log.d(TAG, "checkAuthenticationState: User is null. Navigating to start activity");
-            navigateToStartActivity();
-        } else {
-            Log.d(TAG, "checkAuthenticationState: Authenticated with: " + user.getEmail());
-            checkIfUserIsVerified(FirebaseAuth.getInstance().getCurrentUser());
+        Log.d(TAG, "onResume: checking if user is authenticated");
+        if (mUser != null) {
+//            mViewModel.checkIfUserIsVerified(this, mUser);
         }
     }
 
-    private void navigateToStartActivity() {
-        Intent intent = new Intent(this, StartActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-    }
+    private void createNotificationChannel() {
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(PRIMARY_CHANNEL_ID,
+                    "Job Notification", NotificationManager.IMPORTANCE_HIGH);
+            channel.enableLights(true);
+            channel.setLightColor(Color.GREEN);
+            channel.enableVibration(true);
+            channel.setDescription("New Job alert");
+            manager.createNotificationChannel(channel);
 
-
-    private void navigateToBusinessActivity() {
-        Intent intent = new Intent(this, BusinessActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
-    }
-
-    private void checkIfUserIsVerified(FirebaseUser user) {
-
-        if (user.isEmailVerified()) {
-            queryDatabase();
-        } else {
-            Toast.makeText(this, "Check your Email inbox for a verification " +
-                    "link", Toast.LENGTH_LONG).show();
-            FirebaseAuth.getInstance().signOut();
-            navigateToStartActivity();
+            Log.d(TAG, "createNotificationChannel: Notification channel created");
         }
     }
 
-    private void queryDatabase() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference userRef = db.collection(getString(R.string.dbnode_users)).document(user.getUid());
-        userRef.get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    String accountType = documentSnapshot.getString("account_type");
-                    if (accountType.equals(getString(R.string.business))) {
-                        Log.d(TAG, "checkAuthenticationState: User is authenticated with a business account");
-                        navigateToBusinessActivity();
-                    }
-                });
+    /*
+    -------------------------------- Firebase Setup -------------------------
+    */
+    private void setupFirebaseAuth() {
+        Log.d(TAG, "setupFirebaseAuth: Setting up firebase");
+        mAuthStateListener = firebaseAuth -> {
+            mUser = firebaseAuth.getCurrentUser();
+            if (mUser != null) {
+                Log.d(TAG, "onAuthStateChanged: signed in" + mUser.getUid());
+//                mViewModel.checkIfUserIsVerified(this, mUser);
+            } else {
+                Log.d(TAG, "onAuthStateChanged: signed out");
+            }
+
+        };
     }
 
     @Override

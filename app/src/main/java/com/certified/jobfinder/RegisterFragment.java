@@ -37,10 +37,18 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import static android.text.TextUtils.isEmpty;
+
 public class RegisterFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "RegisterFragment";
     private NavController mNavController;
+
+    private StartActivityViewModel mViewModel;
+
+//    Firebase
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
+    private FirebaseUser mUser;
 
     //    widgets
     private TextInputEditText mEmail, mPassword, mConfirmPassword, mName, mPhoneNo;
@@ -53,6 +61,15 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
 
     public RegisterFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: Login fragment created");
+
+        mViewModel = new StartActivityViewModel(getActivity().getApplication());
+        setupFirebaseAuth();
     }
 
     @Override
@@ -149,7 +166,16 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
 
                     if (!mSpinner.getSelectedItem().toString().equals("Choose account type")) {
 
-                        registerNewUser(mEmail.getText().toString(), mPassword.getText().toString());
+                        mViewModel.registerNewUser(
+                                getContext(),
+                                mUser,
+                                mEmail.getText().toString().trim(),
+                                mPassword.getText().toString().trim(),
+                                mProgressBar,
+                                mName.getText().toString().trim(),
+                                mPhoneNo.getText().toString().trim(),
+                                mSpinner,
+                                mNavController);
 
                     } else {
                         Toast.makeText(getContext(), "Choose an account type", Toast.LENGTH_SHORT).show();
@@ -169,96 +195,6 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void registerNewUser(String email, String password) {
-        mProgressBar.setVisibility(View.VISIBLE);
-        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(task -> {
-
-                    if (task.isSuccessful()) {
-                        Log.d(TAG, "onComplete: Created new user with: " + email);
-
-//                            Send the newly created user a verification mail
-                        sendVerificationEmail();
-
-//                            Save new user info in firestore
-                        FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
-                        FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        DocumentReference userRef = db.collection("users").document(mUser.getUid());
-
-                        User user = new User();
-                        user.setName(mName.getText().toString());
-                        user.setPhone(mPhoneNo.getText().toString());
-                        user.setEmail(mEmail.getText().toString());
-                        user.setAccount_type(mSpinner.getSelectedItem().toString());
-                        user.setUser_id(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                        user.setLocation("");
-                        user.setProfile_image(null);
-
-                        userRef.set(user)
-                                .addOnCompleteListener(task1 -> {
-                                    if (task1.isSuccessful()) {
-
-//                                    Update default firestore user data
-                                        UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder()
-                                                .setDisplayName(user.getName())
-                                                .setPhotoUri(user.getProfile_image())
-                                                .build();
-                                        mUser.updateProfile(profileChangeRequest);
-
-//                                   Sign out the user
-                                        FirebaseAuth.getInstance().signOut();
-
-//                                   Redirect the user to the login screen
-                                        Log.d(TAG, "onComplete: redirecting to login screen");
-                                        redirectToLoginScreen();
-                                    } else {
-                                        Log.d(TAG, "onComplete: User Detail upload failed");
-                                        Toast.makeText(getContext(), "Unable to save detail", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-
-                    } else {
-                        if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                            Toast.makeText(getContext(), "You are already registered", Toast.LENGTH_SHORT).show();
-                            redirectToLoginScreen();
-                        } else {
-                            Toast.makeText(getContext(), "Unable to register: "
-                                    + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    mProgressBar.setVisibility(View.GONE);
-                });
-    }
-
-    private void redirectToLoginScreen() {
-        Log.d(TAG, "redirectToLoginScreen: redirecting");
-        mNavController.navigate(R.id.action_registerFragment_to_loginFragment);
-    }
-
-    private void sendVerificationEmail() {
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (user != null) {
-            user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                @Override
-                public void onComplete(@NonNull Task<Void> task) {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(getContext(), "Verification email sent",
-                                Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(getContext(), "Couldn't send verification " +
-                                "email. Try again", Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
-        }
-    }
-
-    private boolean isEmpty(String String) {
-        return String.equals("");
-    }
-
     private boolean doStringsMatch(String s1, String s2) {
         return s1.equals(s2);
     }
@@ -272,61 +208,39 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        FirebaseAuth.getInstance().addAuthStateListener(mAuthStateListener);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        checkAuthenticationState();
-    }
-
-    private void checkAuthenticationState() {
-        Log.d(TAG, "checkAuthenticationState: checking authentication state");
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user == null) {
-            Log.d(TAG, "checkAuthenticationState: User is null");
-        } else {
-            queryDatabase();
+        if (mUser != null) {
+            mViewModel.checkIfUserIsVerified(getContext(), mUser);
         }
     }
 
-    private void queryDatabase() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String accountType = preferences.getString(PreferenceKeys.ACCOUNT_TYPE, "");
-        if (!isEmpty(accountType)) {
-            if (accountType.equals("Business")) {
-                navigateToBusinessActivity();
-            } else if (accountType.equals("Individual")) {
-                navigateToIndividualActivity();
-            }
-        } else {
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-            if (user != null) {
-                DocumentReference userRef = db.collection(getString(R.string.dbnode_users)).document(user.getUid());
-                userRef.get()
-                        .addOnSuccessListener(documentSnapshot -> {
-                            String accountType1 = documentSnapshot.getString("account_type");
-                            if (accountType1.equals(getString(R.string.individual))) {
-                                Log.d(TAG, "checkAuthenticationState: User is authenticated with an individual account");
-                                navigateToIndividualActivity();
-                            } else if (accountType1.equals(getString(R.string.business))) {
-                                Log.d(TAG, "checkAuthenticationState: User is authenticated with a business account");
-                                navigateToBusinessActivity();
-                            }
-                        });
-            }
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthStateListener != null) {
+            FirebaseAuth.getInstance().removeAuthStateListener(mAuthStateListener);
         }
     }
 
-    public void navigateToIndividualActivity() {
-        Intent intent = new Intent(getContext(), IndividualActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-    }
-
-    public void navigateToBusinessActivity() {
-        Intent intent = new Intent(getContext(), BusinessActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
+    /*
+    -------------------------------- Firebase Setup -------------------------
+    */
+    public void setupFirebaseAuth() {
+        mAuthStateListener = firebaseAuth -> {
+            mUser = firebaseAuth.getCurrentUser();
+            if (mUser != null) {
+                Log.d(TAG, "onAuthStateChanged: signed in" + mUser.getUid());
+                mViewModel.checkIfUserIsVerified(getContext(), mUser);
+            } else {
+                Log.d(TAG, "onAuthStateChanged: signed out");
+            }
+        };
     }
 }
