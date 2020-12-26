@@ -1,6 +1,7 @@
 package com.certified.jobfinder.individual_bottom_nav_menu_fragments;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,13 +13,21 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.preference.PreferenceManager;
+import androidx.work.PeriodicWorkRequest;
 
 import com.bumptech.glide.Glide;
+import com.certified.jobfinder.MyWorker;
 import com.certified.jobfinder.R;
 import com.certified.jobfinder.SettingsActivity;
 import com.certified.jobfinder.StartActivity;
+import com.certified.jobfinder.util.PreferenceKeys;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -26,12 +35,16 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     private static final String TAG = "ProfileFragment";
 
-//    widgets
+    //    widgets
     private Group groupEditProfile, groupMyLocation, groupUploadCV, groupHelpCenter, groupAboutUs, groupLogOut;
-    private ImageView ivProfileImage, ivShare, ivSettings;
+    private ImageView ivShare, ivSettings;
     private TextView tvDisplayName, tvProfile, tvLocation, tvUploadCV, tvHelp, tvAbout, tvLogout;
 
+    private NavController mNavController;
+
     private FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
+    private PeriodicWorkRequest request;
+    private CircleImageView ivProfileImage;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -60,19 +73,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         groupHelpCenter = view.findViewById(R.id.group_help_center);
         groupAboutUs = view.findViewById(R.id.group_about_us);
         groupLogOut = view.findViewById(R.id.group_log_out);
+
+        mNavController = Navigation.findNavController(getActivity(), R.id.individual_host_fragment);
+
         return view;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        CircleImageView profileImage = view.findViewById(R.id.iv_profile_image);
-        Glide.with(getContext())
-                .load(R.drawable.logo)
-                .into(profileImage);
-
-        tvDisplayName.setText(mUser.getDisplayName());
 
         groupEditProfile.setOnClickListener(this);
         groupMyLocation.setOnClickListener(this);
@@ -84,37 +93,49 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         ivProfileImage.setOnClickListener(this);
         ivShare.setOnClickListener(this);
         ivSettings.setOnClickListener(this);
+
+        request = new PeriodicWorkRequest.Builder(MyWorker.class, 15, TimeUnit.MINUTES).build();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String displayName = preferences.getString(PreferenceKeys.NAME, "");
+        Glide.with(getContext())
+                .load(R.drawable.logo)
+                .into(ivProfileImage);
+        tvDisplayName.setText(displayName);
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.group_log_out:
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(getContext(), StartActivity.class));
-                getActivity().finish();
+        int id = view.getId();
+        if (id == R.id.group_log_out) {
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(getContext(), StartActivity.class));
+            getActivity().finish();
+        } else if (id == R.id.group_edit_profile) {
+            mNavController.navigate(R.id.editProfileFragment);
+        } else if (id == R.id.group_my_location) {
+//            Do something here
+        } else if (id == R.id.group_upload_cv) {
 
-            case R.id.group_edit_profile:
-                break;
+        } else if (id == R.id.group_help_center) {
 
-            case R.id.group_my_location:
-                break;
+        } else if (id == R.id.group_about_us) {
 
-            case R.id.group_upload_cv:
-                break;
-
-            case R.id.group_help_center:
-                break;
-
-            case R.id.group_about_us:
-                break;
-
-            case R.id.iv_settings:
-                startActivity(new Intent(getContext(), SettingsActivity.class));
-                break;
-
-            case R.id.iv_share:
-                break;
+        } else if (id == R.id.iv_settings) {
+            startActivity(new Intent(getContext(), SettingsActivity.class));
+//            int nightMode = AppCompatDelegate.getDefaultNightMode();
+//            //Set the theme mode for the restarted activity
+//            if (nightMode == AppCompatDelegate.MODE_NIGHT_NO) {
+//                AppCompatDelegate.setDefaultNightMode
+//                        (AppCompatDelegate.MODE_NIGHT_YES);
+//            }
+//            getActivity().recreate();
+        } else if (id == R.id.iv_share) {
+//            WorkManager.getInstance(getContext()).cancelAllWork();
         }
     }
 }

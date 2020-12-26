@@ -26,6 +26,12 @@
         <item name="colorPrimary">@color/accentGreen</item>
     </style>
 
+    <style name="DarkMode" parent="Theme.MaterialComponents.DayNight.NoActionBar" >
+        <item name="color">@color/mainWhite</item>
+        <item name="backgroundColor">@color/lightBlack</item>
+        <item name="colorPrimary">@color/black</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppThemeMaterial.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />

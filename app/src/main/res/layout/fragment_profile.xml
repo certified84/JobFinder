@@ -13,7 +13,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/background_profile">
+            android:background="@drawable/profile_bg">
 
 
             <TextView
@@ -21,7 +21,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
-                android:text="Samson Achiaga"
+                tools:text="Display name"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 android:textStyle="bold"

@@ -71,15 +71,15 @@ public class SavedJobsAdapter extends FirestoreRecyclerAdapter<SavedJob, SavedJo
             @Override
             public void unLiked(LikeButton likeButton) {
                 Log.d(TAG, "unliked: " + model.getOriginal_job_id());
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
-                SharedPreferences.Editor editor = preferences.edit();
-
-                Set<String> savedJobs = preferences.getStringSet(PreferenceKeys.SAVED_JOBS, new HashSet<>());
-                savedJobs.remove(model.getOriginal_job_id());
-
-                editor.putStringSet(PreferenceKeys.SAVED_JOBS, savedJobs);
-                Log.d(TAG, "unliked: unsaved: " + model.getOriginal_job_id());
-                editor.apply();
+//                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+//                SharedPreferences.Editor editor = preferences.edit();
+//
+//                Set<String> savedJobs = preferences.getStringSet(PreferenceKeys.SAVED_JOBS, new HashSet<>());
+//                savedJobs.remove(model.getOriginal_job_id());
+//
+//                editor.putStringSet(PreferenceKeys.SAVED_JOBS, savedJobs);
+//                Log.d(TAG, "unliked: unsaved: " + model.getOriginal_job_id());
+//                editor.apply();
 
                 savedJobRef = getSnapshots().getSnapshot(position).getReference();
                 savedJobRef.delete()

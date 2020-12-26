@@ -39,13 +39,13 @@
       android:label="Help and Feedback"
       tools:layout="@layout/fragment_help" />
   <fragment
-      android:id="@+id/newOfferFragment"
-      android:name="com.certified.jobfinder.NewOfferFragment"
-      android:label="New offer"
-      tools:layout="@layout/fragment_new_offer" />
-  <fragment
       android:id="@+id/messageFragment"
       android:name="com.certified.jobfinder.MessageFragment"
       android:label="Messages"
       tools:layout="@layout/fragment_message" />
+  <fragment
+      android:id="@+id/editProfileFragment"
+      android:name="com.certified.jobfinder.EditProfileFragment"
+      android:label="fragment_edit_profile"
+      tools:layout="@layout/fragment_edit_profile" />
 </navigation>

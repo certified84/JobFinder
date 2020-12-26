@@ -15,7 +15,7 @@ import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.certified.jobfinder.util.IntentExtra;
-import com.github.captain_miao.optroundcardview.OptRoundCardView;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.chip.Chip;
 import com.like.LikeButton;
 
@@ -29,7 +29,7 @@ public class JobDetailActivity extends AppCompatActivity implements View.OnClick
     private ImageView ivBusinessProfileImage;
     private TextView tvJobTitle, tvBusinessName, tvBusinessLocation;
     private Chip chipJobDescription, chipBusinessDetails, chipBusinessReview;
-    private OptRoundCardView likeCardView;
+    private MaterialCardView likeCardView;
     private LikeButton mLikeButton;
     private NavController mNavController;
     private Intent intent;
@@ -41,7 +41,7 @@ public class JobDetailActivity extends AppCompatActivity implements View.OnClick
 
         btnBack = findViewById(R.id.btn_back);
         btnShare = findViewById(R.id.btn_share);
-        likeCardView = findViewById(R.id.optRoundCardView_like_job);
+        likeCardView = findViewById(R.id.cardview_like_job);
         mLikeButton = findViewById(R.id.likeButton);
         btnApplyForJob = findViewById(R.id.btn_apply_for_job);
         ivBusinessProfileImage = findViewById(R.id.iv_business_profile_image);
@@ -83,9 +83,9 @@ public class JobDetailActivity extends AppCompatActivity implements View.OnClick
             Bundle bundle = new Bundle();
             bundle.putString(IntentExtra.JOB_DESCRIPTION, jobDescription);
             mNavController.navigate(R.id.jobDescriptionFragment, bundle, null);
-        } else if(chipBusinessDetails.isChecked()) {
+        } else if (chipBusinessDetails.isChecked()) {
             mNavController.navigate(R.id.jobDescriptionFragment);
-        } else if(chipBusinessReview.isChecked()) {
+        } else if (chipBusinessReview.isChecked()) {
             mNavController.navigate(R.id.jobDescriptionFragment);
         }
     }
@@ -123,37 +123,25 @@ public class JobDetailActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
+        int id = view.getId();
 
-            case R.id.btn_share:
-                Toast.makeText(this, "You clicked share", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.btn_back:
-                finish();
-                break;
-
-            case R.id.btn_apply_for_job:
-                Toast.makeText(this, "You clicked apply", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.optRoundCardView_like_job:
-                Toast.makeText(this, "You liked this job", Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.chip_job_description:
-                Bundle bundle = new Bundle();
-                bundle.putString(IntentExtra.JOB_DESCRIPTION, intent.getStringExtra(IntentExtra.JOB_DESCRIPTION));
-                mNavController.navigate(R.id.jobDescriptionFragment, bundle, null);
-                break;
-
-            case R.id.chip_business_details:
-                mNavController.navigate(R.id.businessDescriptionFragment, null, null);
-                break;
-
-            case R.id.chip_business_review:
-                mNavController.navigate(R.id.businessReviewFragment, null, null);
-                break;
+        if (id == R.id.btn_share) {
+            Toast.makeText(this, "You clicked share", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.btn_back) {
+            super.onBackPressed();
+            finish();
+        } else if (id == R.id.btn_apply_for_job) {
+            Toast.makeText(this, "You clicked apply", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.cardview_like_job) {
+            Toast.makeText(this, "You liked this job", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.chip_job_description) {
+            Bundle bundle = new Bundle();
+            bundle.putString(IntentExtra.JOB_DESCRIPTION, intent.getStringExtra(IntentExtra.JOB_DESCRIPTION));
+            mNavController.navigate(R.id.jobDescriptionFragment, bundle, null);
+        } else if (id == R.id.chip_business_details) {
+            mNavController.navigate(R.id.businessDescriptionFragment, null, null);
+        } else if (id == R.id.chip_business_review) {
+            mNavController.navigate(R.id.businessReviewFragment, null, null);
         }
     }
 }

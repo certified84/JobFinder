@@ -14,7 +14,7 @@
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
         android:layout_marginTop="32dp"
-        android:background="@drawable/custom_button"
+        android:background="@drawable/custom_button_bg"
         android:foregroundGravity="center"
         android:paddingLeft="8dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,7 +28,7 @@
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
-        android:background="@drawable/custom_button"
+        android:background="@drawable/custom_button_bg"
         android:foregroundGravity="center"
         android:scaleType="centerInside"
         app:layout_constraintEnd_toEndOf="parent"
@@ -168,47 +168,60 @@
         app:defaultNavHost="true"
         app:layout_constraintBottom_toTopOf="@+id/btn_apply_for_job"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/horizontalScrollView"
+        app:layout_constraintVertical_bias="1.0"
         app:navGraph="@navigation/job_details_nav_graph" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_apply_for_job"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
         android:layout_marginBottom="16dp"
-        android:background="@drawable/button_apply_for_job"
+        android:background="@drawable/button_apply_for_job_bg"
         android:text="Apply for job"
         android:textColor="#FFFFFF"
         app:backgroundTint="#E42D55"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/optRoundCardView_like_job" />
+        app:layout_constraintStart_toEndOf="@+id/cardview_like_job" />
 
-    <com.github.captain_miao.optroundcardview.OptRoundCardView
-        android:id="@+id/optRoundCardView_like_job"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardview_like_job"
         android:layout_width="60dp"
         android:layout_height="50dp"
         android:layout_marginStart="32dp"
         android:layout_marginLeft="32dp"
-        android:background="@drawable/button_like_job"
+        app:cardBackgroundColor="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="@+id/btn_apply_for_job"
         app:layout_constraintEnd_toStartOf="@+id/btn_apply_for_job"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/btn_apply_for_job"
-        app:layout_constraintVertical_bias="0.0"
-        app:optRoundCardCornerRadius="15dp">
+        app:layout_constraintVertical_bias="0.0">
 
-        <com.like.LikeButton
-            android:id="@+id/likeButton"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center" />
-    </com.github.captain_miao.optroundcardview.OptRoundCardView>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/button_like_job_bg"
+            android:padding="8dp">
+
+            <com.like.LikeButton
+                android:id="@+id/likeButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

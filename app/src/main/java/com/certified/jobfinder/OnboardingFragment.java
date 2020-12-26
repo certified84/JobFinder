@@ -1,37 +1,27 @@
 package com.certified.jobfinder;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.preference.PreferenceManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.certified.jobfinder.adapters.ViewPagerAdapter;
 import com.certified.jobfinder.model.SliderItem;
-import com.certified.jobfinder.util.PreferenceKeys;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.rd.PageIndicatorView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
-import static android.text.TextUtils.isEmpty;
 
 public class OnboardingFragment extends Fragment {
 
@@ -42,7 +32,7 @@ public class OnboardingFragment extends Fragment {
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private FirebaseUser mUser;
 
-    private StartActivityViewModel mViewModel;
+    private Repository mRepository;
 
     private ViewPagerAdapter mViewPagerAdapter;
     private PageIndicatorView mIndicator;
@@ -52,8 +42,7 @@ public class OnboardingFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mViewModel = new StartActivityViewModel(getActivity().getApplication());
+        mRepository = new Repository(getActivity().getApplication());
         setupFirebaseAuth();
     }
 
@@ -89,11 +78,11 @@ public class OnboardingFragment extends Fragment {
     private void setUpSliderItem() {
         mSliderItems = new ArrayList<>();
         mSliderItems.add(new SliderItem(R.raw.animation_job_alert, "Find perfect job match",
-                "Finding your dream job is now much\neasier and faster like never before"));
+                "Finding your dream job is now much\neasier and faster like never before", R.drawable.image_search));
         mSliderItems.add(new SliderItem(R.raw.animation_job_alert, "Get notified with jobs",
-                "With every job that matches your\nprofile, you will get notified"));
+                "With every job that matches your\nprofile, you will get notified", R.drawable.undraw_push_notifications_im0o));
         mSliderItems.add(new SliderItem(R.raw.animation_job_alert, "Apply and get selected",
-                "Apply to your preferred job\nthat matches your skill"));
+                "Apply to your preferred job\nthat matches your skill", R.drawable.image_apply_2));
     }
 
     private void setUpViewPager() {
@@ -116,7 +105,7 @@ public class OnboardingFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (mUser != null) {
-            mViewModel.checkIfUserIsVerified(getContext(), mUser);
+            mRepository.checkIfUserIsVerified();
         }
     }
 
@@ -138,16 +127,13 @@ public class OnboardingFragment extends Fragment {
 -------------------------------- Firebase Setup -------------------------
 */
     private void setupFirebaseAuth() {
-        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                mUser = firebaseAuth.getCurrentUser();
-                if (mUser != null) {
-                    Log.d(TAG, "onAuthStateChanged: signed in " + mUser.getEmail());
-                    mViewModel.checkIfUserIsVerified(getContext(), mUser);
-                } else {
-                    Log.d(TAG, "onAuthStateChanged: signed out");
-                }
+        mAuthStateListener = firebaseAuth -> {
+            mUser = firebaseAuth.getCurrentUser();
+            if (mUser != null) {
+                Log.d(TAG, "onAuthStateChanged: signed in " + mUser.getEmail());
+                mRepository.checkIfUserIsVerified();
+            } else {
+                Log.d(TAG, "onAuthStateChanged: signed out");
             }
         };
     }

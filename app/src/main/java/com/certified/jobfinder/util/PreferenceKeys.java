@@ -11,4 +11,5 @@ public class PreferenceKeys {
     public static final String LOCATION = "location";
     public static final String FIRST_TIME_OPEN = "first_time_open";
     public static final String ACCOUNT_TYPE = "account_type";
+    public static final String DARK_MODE = "dark_mode";
 }

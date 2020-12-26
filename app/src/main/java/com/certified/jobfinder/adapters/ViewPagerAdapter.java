@@ -19,12 +19,13 @@ import com.certified.jobfinder.model.SliderItem;
 
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.ViewPagerViewHolder> {
 
     private static final String TAG = "ViewPagerAdapter";
 
     private Context mContext;
-    private LayoutInflater mLayoutInflater;
 
     private List<SliderItem> mSliderItems;
     private ViewPager2 mViewPager2;
@@ -56,18 +57,21 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
 
     public static class ViewPagerViewHolder extends RecyclerView.ViewHolder {
         private LottieAnimationView animationView;
+        private ImageView mImageView;
         private TextView tvTitle, tvDescription;
 
         public ViewPagerViewHolder(@NonNull View itemView) {
             super(itemView);
             animationView = itemView.findViewById(R.id.animation_view);
+            mImageView = itemView.findViewById(R.id.image_view);
             tvTitle = itemView.findViewById(R.id.tv_title);
             tvDescription = itemView.findViewById(R.id.tv_description);
         }
 
         public void setItems(SliderItem sliderItem) {
-            animationView.setRenderMode(RenderMode.SOFTWARE);
+//            animationView.setRenderMode(RenderMode.SOFTWARE);
             animationView.setAnimation(sliderItem.getAnimation());
+            mImageView.setImageResource(sliderItem.getImage());
             tvTitle.setText(sliderItem.getTitle());
             tvDescription.setText(sliderItem.getDescription());
         }

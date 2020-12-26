@@ -9,7 +9,8 @@
         android:id="@+id/animation_view"
         android:layout_width="347dp"
         android:layout_height="450dp"
-        app:layout_constraintBottom_toTopOf="@+id/tv_title"
+        android:layout_marginTop="32dp"
+        android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -17,17 +18,25 @@
         app:lottie_autoPlay="true"
         app:lottie_loop="true" />
 
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="347dp"
+        android:layout_height="450dp"
+        app:layout_constraintBottom_toBottomOf="@+id/animation_view"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/animation_view"
+        android:contentDescription="Onboarding image" />
+
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="16dp"
         android:text="TextView"
         android:textColor="@color/primaryGreen"
         android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/tv_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/animation_view" />
@@ -36,10 +45,10 @@
         android:id="@+id/tv_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:gravity="center"
         android:text="TextView"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_title" />

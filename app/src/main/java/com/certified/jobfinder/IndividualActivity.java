@@ -22,6 +22,7 @@ import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
 import com.certified.jobfinder.util.PreferenceKeys;
+import com.google.firebase.BuildConfig;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -38,7 +39,6 @@ public class IndividualActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private FirebaseUser mUser;
 
-    private StartActivityViewModel mViewModel;
     private static final String PRIMARY_CHANNEL_ID = "primary_notification_channel";
 
     @Override

@@ -1,7 +1,5 @@
 package com.certified.jobfinder;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
@@ -22,20 +19,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.preference.PreferenceManager;
 
-import com.certified.jobfinder.model.User;
-import com.certified.jobfinder.util.PreferenceKeys;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -44,9 +32,9 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "RegisterFragment";
     private NavController mNavController;
 
-    private StartActivityViewModel mViewModel;
+    private Repository mRepository;
 
-//    Firebase
+    //    Firebase
     private FirebaseAuth.AuthStateListener mAuthStateListener;
     private FirebaseUser mUser;
 
@@ -68,7 +56,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate: Login fragment created");
 
-        mViewModel = new StartActivityViewModel(getActivity().getApplication());
+        mRepository = new Repository(getActivity().getApplication());
         setupFirebaseAuth();
     }
 
@@ -116,7 +104,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
                 if (mSpinner.getSelectedItem().toString().equals(getString(R.string.business))) {
                     etNameLayout.setHint(getString(R.string.business_name));
                 } else if (mSpinner.getSelectedItem().toString().equals(getString(R.string.individual))) {
-                    etNameLayout.setHint(getString(R.string.name));
+                    etNameLayout.setHint(getString(R.string.full_name));
                 } else {
                     etNameLayout.setHint("Name");
                 }
@@ -133,6 +121,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_register:
+                Log.d(TAG, "run: Thread = " + Thread.currentThread().getId());
                 registrationCheck();
                 break;
 
@@ -166,9 +155,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
 
                     if (!mSpinner.getSelectedItem().toString().equals("Choose account type")) {
 
-                        mViewModel.registerNewUser(
-                                getContext(),
-                                mUser,
+                        mRepository.registerNewUser(
                                 mEmail.getText().toString().trim(),
                                 mPassword.getText().toString().trim(),
                                 mProgressBar,
@@ -217,7 +204,7 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
         if (mUser != null) {
-            mViewModel.checkIfUserIsVerified(getContext(), mUser);
+            mRepository.checkIfUserIsVerified();
         }
     }
 
@@ -234,10 +221,9 @@ public class RegisterFragment extends Fragment implements View.OnClickListener {
     */
     public void setupFirebaseAuth() {
         mAuthStateListener = firebaseAuth -> {
-            mUser = firebaseAuth.getCurrentUser();
             if (mUser != null) {
                 Log.d(TAG, "onAuthStateChanged: signed in" + mUser.getUid());
-                mViewModel.checkIfUserIsVerified(getContext(), mUser);
+                mRepository.checkIfUserIsVerified();
             } else {
                 Log.d(TAG, "onAuthStateChanged: signed out");
             }
